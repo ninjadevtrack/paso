@@ -1,0 +1,1940 @@
+<?php
+
+/**
+ * Implementation of hook_menu()
+ */
+function stability_shortcodes_menu() {
+  variable_set('nd_visualshortcodes_extra_css', drupal_get_path('module', 'stability_shortcodes') . '/css/stability_shortcodes.css');
+}
+
+/**
+ * Implementation of hook_shortcode_info().
+ * Using the same formatting as hook_filter_info()
+ */
+function stability_shortcodes_shortcode_info() {
+  $shortcodes['quote'] = array(
+    'title' => t('Quote col'),
+    'description' => t('Replace the given text formatted like as a quote.'),
+    'process callback' => 'stability_shortcodes_shortcode_quote',
+    'process settings callback' => 'stability_shortcodes_shortcode_quote_settings',
+    'tips callback' => 'stability_shortcodes_shortcode_quote_tip',
+    'icon' => 'fa fa-quote-right',
+    'child shortcode' => 'html',
+    'description_field' => 'author',
+  );
+  $shortcodes['progress'] = array(
+    'title' => t('Progress Line'),
+    'description' => t('Progress line with title and percents.'),
+    'process callback' => 'stability_shortcodes_shortcode_progress',
+    'process settings callback' => 'stability_shortcodes_shortcode_progress_settings',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'tips callback' => 'stability_shortcodes_shortcode_progress_tip',
+    'icon' => 'fa fa-tasks',
+    'description_field' => 'title',
+  );
+  $shortcodes['accordions'] = array(
+    'title' => t('Accordion container'),
+    'description' => t('Animated Accordions wrapper.'),
+    'process callback' => 'stability_shortcodes_shortcode_accordions',
+    'tips callback' => 'stability_shortcodes_shortcode_accordions_tip',
+    'child shortcode' => 'accordion',
+    'icon' => 'fa fa-bars'
+  );
+  $shortcodes['accordion'] = array(
+    'title' => t('Accordion item'),
+    'description' => t('Accordion item.'),
+    'process callback' => 'stability_shortcodes_shortcode_accordion',
+    'process settings callback' => 'stability_shortcodes_shortcode_accordion_settings',
+    'icon' => 'fa fa-minus',
+    'description_field' => 'title',
+  );
+  $shortcodes['delimiter'] = array(
+    'title' => t('Delimiter'),
+    'description' => t('Full Width delimiter.'),
+    'process callback' => 'stability_shortcodes_shortcode_delimiter',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'tips callback' => 'stability_shortcodes_shortcode_delimiter_tip',
+    'icon' => 'fa fa-ellipsis-h',  
+  );
+  $shortcodes['spacer'] = array(
+    'title' => t('Spacer'),
+    'description' => t('Spacer without any content.'),
+    'process callback' => 'stability_shortcodes_shortcode_spacer',
+    'tips callback' => 'stability_shortcodes_shortcode_spacer_tip',
+    'process settings callback' => 'stability_shortcodes_shortcode_spacer_settings',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'icon' => 'fa fa-square-o',
+    'description_field' => 'height',
+  );
+  $shortcodes['container'] = array(
+    'title' => t('Container 1170px'),
+    'description' => t('Container for content.'),
+    'process callback' => 'stability_shortcodes_shortcode_container',
+    'icon' => 'fa fa-hdd-o',
+    'tips callback' => 'stability_shortcodes_shortcode_container_tip',
+  );
+  $shortcodes['row'] = array(
+    'title' => t('Row for columns'),
+    'description' => t('Container for cols.'),
+    'process callback' => 'stability_shortcodes_shortcode_row',
+    'tips callback' => 'stability_shortcodes_shortcode_row_tip',
+    'process backend callback' => 'nd_visualshortcodes_backend_row',
+    'icon' => 'fa fa-th-large',
+    'child shortcode' => 'col'
+  );
+  $shortcodes['col'] = array(
+    'title' => t('Column'),
+    'description' => t('Column with size settings'),
+    'process callback' => 'stability_shortcodes_shortcode_col',
+    'process backend callback' => 'nd_visualshortcodes_backend_col',
+    'process settings callback' => 'nd_visualshortcodes_shortcode_col_settings',
+    'icon' => 'fa fa-columns'
+  );
+  $shortcodes['message'] = array(
+    'title' => t('Message'),
+    'description' => t('Dismissable Message.'),
+    'process callback' => 'stability_shortcodes_shortcode_message',
+    'tips callback' => 'stability_shortcodes_shortcode_message_tip',
+    'process settings callback' => 'stability_shortcodes_shortcode_message_settings',
+    'icon' => 'fa fa-info-circle',
+    'description_field' => 'icon',
+  );
+  $shortcodes['tabs'] = array(
+    'title' => t('Tabs container'),
+    'description' => t('jQuery Tabs.'),
+    'process callback' => 'stability_shortcodes_shortcode_tabs',
+    'tips callback' => 'stability_shortcodes_shortcode_tabs_tip',
+    'icon' => 'fa fa-folder-open',
+    'child shortcode' => 'tab',
+    'description_field' => 'type',
+  );
+  $shortcodes['tab'] = array(
+    'title' => t('Tab'),
+    'description' => t('Tab content.'),
+    'process callback' => 'stability_shortcodes_shortcode_tab',
+    'process settings callback' => 'stability_shortcodes_shortcode_tab_settings',
+    'icon' => 'fa fa-folder',
+    'description_field' => 'title',
+  );
+  $shortcodes['button'] = array(
+    'title' => t('Button'),
+    'description' => t('Button linked to any page or content.'),
+    'process callback' => 'stability_shortcodes_shortcode_button',
+    'tips callback' => 'stability_shortcodes_shortcode_button_tip',
+    'process settings callback' => 'stability_shortcodes_shortcode_button_settings',
+    'icon' => 'fa fa-bold',
+    'description_field' => 'text',
+  );
+  $shortcodes['call_to_action'] = array(
+    'title' => t('Call to Action'),
+    'description' => t('Text with button link'),
+    'process callback' => 'stability_shortcodes_shortcode_calltoaction',
+    'process settings callback' => 'stability_shortcodes_shortcode_calltoaction_settings',
+    'tips callback' => 'stability_shortcodes_shortcode_calltoaction_tip',
+    'icon' => 'fa fa-bullhorn',
+    'description_field' => 'text',
+  );
+  $shortcodes['icon_box'] = array(
+    'title' => t('Icon Box'),
+    'description' => t('Icon box with text.'),
+    'process callback' => 'stability_shortcodes_shortcode_iconbox',
+    'process settings callback' => 'stability_shortcodes_shortcode_iconbox_settings',
+    'tips callback' => 'stability_shortcodes_shortcode_iconbox_tip',
+    'icon' => 'fa fa-cube',
+  );
+  $shortcodes['pricing_table'] = array(
+    'title' => t('Pricing Table Container'),
+    'description' => t('Responsive Pricing Table.'),
+    'process callback' => 'stability_shortcodes_shortcode_pricing_table',
+    'process settings callback' => 'stability_shortcodes_shortcode_pricing_table_settings',
+    'tips callback' => 'stability_shortcodes_shortcode_pricing_table_tip',
+    'icon' => 'fa fa-usd',
+    'child shortcode' => 'pricing_table_col',
+    'description_field' => 'type',
+  );
+  $shortcodes['pricing_table_col'] = array(
+    'title' => t('Pricing Table Col'),
+    'description' => t('Pricing Table Column.'),
+    'process callback' => 'stability_shortcodes_shortcode_pricing_table_col',
+    'process settings callback' => 'stability_shortcodes_shortcode_pricing_table_col_settings',
+    'icon' => 'fa fa-money',
+    'child shortcode' => 'pricing_table_row',
+    'description_field' => 'title',
+  );
+  $shortcodes['pricing_table_row'] = array(
+    'title' => t('Pricing Table Row'),
+    'description' => t('Pricing Table Row.'),
+    'process callback' => 'stability_shortcodes_shortcode_pricing_table_row',
+    'icon' => 'fa fa-bank'
+  );
+  $shortcodes['dropcap'] = array(
+    'title' => t('Dropcap'),
+    'description' => t('Wrap symbol in dropcap.'),
+    'process callback' => 'stability_shortcodes_shortcode_dropcap',
+    'process settings callback' => 'stability_shortcodes_shortcode_dropcap_settings',
+    'tips callback' => 'stability_shortcodes_shortcode_dropcap_tip',
+    'icon' => 'fa fa-paragraph'
+  );
+  $shortcodes['view'] = array(
+    'title' => t('View'),
+    'description' => t('Embed content - rendered View. To by dynamical should be used under '),
+    'process callback' => 'stability_shortcodes_shortcode_view',
+    'tips callback' => 'stability_shortcodes_shortcode_view_tip',
+    'icon' => 'fa fa-sun-o',
+    'description_callback' => 'stability_shortcodes_shortcode_view_description',
+  );
+  $shortcodes['block'] = array(
+    'title' => t('Block'),
+    'description' => t('Render block.'),
+    'process callback' => 'stability_shortcodes_shortcode_block',
+    'tips callback' => 'stability_shortcodes_shortcode_block_tip',
+    'icon' => 'fa fa-file',
+    'description_callback' => 'stability_shortcodes_shortcode_block_description',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+  );
+  $shortcodes['node'] = array(
+    'title' => t('Node'),
+    'description' => t('Render node.'),
+    'process callback' => 'stability_shortcodes_shortcode_node',
+    'tips callback' => 'stability_shortcodes_shortcode_node_tip',
+    'icon' => 'fa fa-file-o',
+    'description_callback' => 'stability_shortcodes_shortcode_node_description',
+  );
+  $shortcodes['featured_boxes'] = array(
+    'title' => t('Featured Box Container'),
+    'description' => t('Animated on mouse hover event boxes with icon and text.'),
+    'process callback' => 'stability_shortcodes_shortcode_featured_boxes',
+    'tips callback' => 'stability_shortcodes_shortcode_featured_boxes_tip',
+    'icon' => 'fa fa-star',
+  );
+  $shortcodes['featured_box'] = array(
+    'title' => t('Featured Box'),
+    'process callback' => 'stability_shortcodes_shortcode_featured_box',
+    'process settings callback' => 'stability_shortcodes_shortcode_featured_box_settings',
+    'icon' => 'fa fa-star-half-empty',
+    'description_field' => 'title',
+  );
+  $shortcodes['video'] = array(
+    'title' => t('Video Iframe'),
+    'description' => t('Iframe adaptive video.'),
+    'process callback' => 'stability_shortcodes_shortcode_video',
+    'process settings callback' => 'stability_shortcodes_shortcode_video_settings',
+    'tips callback' => 'stability_shortcodes_shortcode_video_tip',
+    'icon' => 'fa fa-video-camera',
+    'description_field' => 'url',
+  );
+  $shortcodes['shape_box'] = array(
+    'title' => t('Shape Box'),
+    'description' => t('Animated on mouse hover shape boxes with image, title and text.'),
+    'process callback' => 'stability_shortcodes_shortcode_shape_box',
+    'process settings callback' => 'stability_shortcodes_shortcode_shape_box_settings',
+    'tips callback' => 'stability_shortcodes_shortcode_shape_box_tip',
+    'icon' => 'fa fa-camera',
+    'description_field' => 'title',
+  );
+  $shortcodes['html'] = array(
+    'title' => t('HTML'),
+    'description' => t('HTML code'),
+    'process callback' => 'stability_shortcodes_shortcode_html',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'nd_visualshortcodes_shortcode_html_settings',
+    'icon' => 'fa fa-code',
+    'description_field' => 'text',
+  );
+  $shortcodes['title'] = array(
+    'title' => t('Title'),
+    'description' => t('Title'),
+    'process callback' => 'stability_shortcodes_shortcode_title',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'stability_shortcodes_shortcode_title_settings',
+    'icon' => 'fa fa-header',
+    'description_field' => 'text',
+  );
+  $shortcodes['list_container'] = array(
+    'title' => t('List container'),
+    'description' => t('List container'),
+    'process callback' => 'stability_shortcodes_shortcode_list_container',
+    'icon' => 'fa fa-list',
+    'description_field' => 'text',
+    'child shortcode' => 'list_item',
+    'live preview' => FALSE,
+  );
+  $shortcodes['list_item'] = array(
+    'title' => t('List item'),
+    'description' => t('List item'),
+    'process callback' => 'stability_shortcodes_shortcode_list_item',
+    'icon' => 'fa fa-indent',
+    'description_field' => 'text',
+    'live preview' => FALSE,
+  );
+  $shortcodes['div'] = array(
+    'title' => t('DIV'),
+    'description' => t('<Div> container'),
+    'process callback' => 'stability_shortcodes_shortcode_div',
+    'icon' => 'fa fa-code',
+    'description_field' => 'text',
+  );
+  $shortcodes['image'] = array(
+    'title' => t('Image'),
+    'description' => t('Image'),
+    'process callback' => 'stability_shortcodes_shortcode_image',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'stability_shortcodes_shortcode_image_settings',
+    'icon' => 'fa fa-image',
+    'description_field' => 'image',
+  );
+  $shortcodes['bg'] = array(
+    'title' => t('Background'),
+    'description' => t('Background for content'),
+    'process callback' => 'stability_shortcodes_shortcode_bg',
+    'process settings callback' => 'stability_shortcodes_shortcode_bg_settings',
+    'icon' => 'fa fa-file-image-o',
+  );
+  $shortcodes['circle_counter'] = array(
+    'title' => t('Circle counter'),
+    'description' => t('Circle counter'),
+    'process callback' => 'stability_shortcodes_shortcode_circle_counter',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'stability_shortcodes_shortcode_circle_counter_settings',
+    'icon' => 'fa fa-bar-chart-o',
+  );
+  $shortcodes['icon'] = array(
+    'title' => t('Icon'),
+    'description' => t('Icon'),
+    'process callback' => 'stability_shortcodes_shortcode_icon',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'stability_shortcodes_shortcode_icon_settings',
+    'icon' => 'fa fa-picture-o',
+  );
+
+  return $shortcodes;
+}
+
+function _stability_shortcodes_shortcode_attributes($attrs) {
+  if(empty($attrs)) {
+    return '';
+  }
+  $allowed_attributes = array('class' => 'class', 'extra_classes' => 'class', 'href' => 'href', 'id' => 'id', 'style' => 'style', 'extra_style' => 'style', 'animation' => 'data-animation', 'delay' => 'data-animation-delay', 'animation_delay' => 'data-animation-delay', 'stellar_ratio' => 'data-stellar-ratio', 'background_ratio' => 'data-stellar-background-ratio');
+  if (isset($attrs['link']) && $attrs['link'] == $_GET['q']) {
+    $attrs['class'] = (isset($attrs['class']) ? $attrs['class'] : '') . ' active'; 
+  }
+  $output = '';
+  $attrs_array = array();
+  foreach($attrs as $name => $value) {
+    $value = trim($value);
+    if(strpos($name, 'style_') === 0) {
+      $value_style = str_replace(array('style_', '_'), array('', '-'), $name);
+      if(strpos($value_style, 'border-radius') !== FALSE) {
+        $value = strpos($value, '%') !== FALSE ? $value : (int)$value . 'px;';
+        $value = '-webkit-' . $value_style. ': ' . $value . '; -moz-' . $value_style. ': ' . $value . '; ' . $value_style. ': ' . $value . ';';
+      }
+      elseif(strpos($name, 'margin') !== FALSE || strpos($name, 'padding') !== FALSE || strpos($name, 'width') !== FALSE || strpos($name, 'height') !== FALSE) {
+        $value = strpos($value, '%') !== FALSE ? $value : (int)$value . 'px;';
+        $value =  $value_style . ': ' . $value;
+      }
+      elseif(strpos($name, 'color') !== FALSE) {
+        $value =  $value_style . ': #' . trim($value, '#') . ';';
+      }
+      elseif(strpos($value_style, 'image') !== FALSE) {
+        $file = file_load($value);
+        $filename = isset($file->uri) ? file_create_url($file->uri) : '';
+        $value =  $value_style . ': url("' . $filename . '");';
+      }
+      else {
+        $value = $value_style . ': ' . $value . ';';
+      }
+      $name = 'style';
+    }
+    if(isset($allowed_attributes[$name])) {
+      $name = $allowed_attributes[$name];
+      if ($value !== '') {
+        $attrs_array[$name] = (isset($attrs_array[$name]) ? $attrs_array[$name] . ' ' : '') . $value;
+      }
+    }
+    elseif(strpos($name, 'data-') === 0) {
+      if ($value !== '') {
+        $attrs_array[$name] = (isset($attrs_array[$name]) ? $attrs_array[$name] . ' ' : '') . $value;
+      }
+    }
+  }
+  if(isset($attrs['style_background_color']) && strtolower(trim($attrs['style_background_color'], '#')) == '000000') {
+    $attrs_array['class'] = (isset($attrs_array['class']) ? $attrs_array['class'] : '') . ' text-white';
+  }
+  if(isset($attrs['style_background_color']) && strtolower(trim($attrs['style_background_color'], '#')) == 'ffffff') {
+    $attrs_array['class'] = (isset($attrs_array['class']) ? $attrs_array['class'] : '') . ' text-black';
+  }
+  if(isset($attrs['text_align']) && $attrs['text_align']) {
+    $attrs_array['style'] = (isset($attrs_array['style']) ? $attrs_array['style'] : '') . ' text-align:'. $attrs['text_align'] . ';';
+  }
+
+  foreach($attrs_array as $name => $value) {
+    $output .= " $name = '$value'";
+  }
+  return $output;
+
+  $output = '';
+  if (isset($attrs['link']) && $attrs['link'] == $_GET['q']) {
+    $attrs['class'] = (isset($attrs['class']) ? $attrs['class'] : '') . ' active'; 
+  }
+  foreach($attrs as $name => $value) {
+    if(isset($allowed_attributes[$name])) { 
+      $name = $allowed_attributes[$name];
+      $value = trim($value);
+      if ($value !== '') {
+        $output .= " $name = '$value'";
+      }
+    }
+  }
+  return $output;
+}
+
+function stability_shortcodes_shortcode_quote($attrs, $text) {
+  $author = '';
+  if(isset($attrs['author']) && $attrs['author']) {
+    $author .= '<div class="bq-author"' . _stability_shortcodes_shortcode_attributes($attrs) . '>
+      <h6>' . $attrs['author'] . '</h6>
+      <span class="bq-author-info">' . $attrs['position'] . '</span>
+    </div>';
+  }
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  $attrs['class'] .= isset($attrs['author']) && $attrs['author'] ? 'testimonial' : '';
+  return '<blockquote ' . _stability_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</blockquote>' . $author;
+}
+
+function stability_shortcodes_shortcode_quote_settings($attrs, $text) {
+  $form['author'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Author'),
+    '#default_value' => isset($attrs['author']) ? $attrs['author'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['position'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Position'),
+    '#default_value' => isset($attrs['position']) ? $attrs['position'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+
+  return $form;
+}
+
+function stability_shortcodes_shortcode_quote_tip($format, $long) {
+  $output = array();
+  $output[] = '<p>All elements supports <strong>class</strong>, <strong>animation</strong> and <strong>delay</strong> attributes. Supports all <a href = "http://daneden.github.io/animate.css/">animation.css</a> values. Delay value in ms. ';
+  $output[] = '<p><strong>Quote:</strong><br/>[quote author = "Author Name" position = "Position"]text[/quote]';
+  if ($long) {
+    $output[] = '<strong>author</strong> - Author name<br/>. <strong>position</strong> -  position name.</p>';
+  }
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_progress($attrs, $text) {
+  $inner_class = isset($attrs['color']) ? $attrs['color'] : '';
+  $attrs['class'] = isset($attrs['extra_classes']) ? $attrs['extra_classes'] : (isset($attrs['class']) ? $attrs['class'] : '');
+  if(isset($attrs['class']) && strpos($attrs['class'], 'progress') !== FALSE) {
+    $inner_class = $attrs['class'];
+    unset($attrs['class'], $attrs['extra_classes']);
+  }
+  $attrs['class'] = 'progress' . (isset($attrs['type']) ? ' progress-' . $attrs['type'] : '') . (isset($attrs['class']) ? ' ' . $attrs['class'] : '') ;
+  $text .= '<div ' . _stability_shortcodes_shortcode_attributes($attrs) . '>
+    <div class = "progress-bar ' . $inner_class  . '" role="progressbar" aria-valuenow="' . $attrs['percent'] . '" aria-valuemin="0" aria-valuemax="100" style="width: ' . $attrs['percent'] .'%;">
+      <span class="progress-label">' . $attrs['title'] . '</span>
+      ' . $attrs['percent'] .'%
+    </div>
+  </div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_progress_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Progress bar:</strong><br/>[progress title = "Design" percent = "90" type = "striped"][/progress]</br>';
+  $output[] = t('Types allowed: ') . '<strong>striped</strong> and <strong>striped active</strong><br/>';
+  $output[] = t('Allowed classes:') . ' <strong>progress-bar-success</strong>, <strong>progress-bar-info</strong>, <strong>progress-bar-warning</strong>,<strong>progress-bar-danger</strong></p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_progress_settings($attrs, $text) {
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-9">',
+  );
+  $form['percent'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Percent'),
+    '#default_value' => isset($attrs['percent']) ? $attrs['percent'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',
+  );
+  $colors = array('progress-red' => t('Red'), 'progress-bar-info' => t('Blue'), 'progress-bar-success' => t('Green'), 'progress-bar-warning' => t('Orange'), 'progress-bar-danger' => t('Red'));
+  $form['color'] = array(
+    '#type' => 'radios',
+    '#title' => t('Color'),
+    '#options' => $colors,
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : 'blue',
+    '#attributes' => array('class' => array('color-radios')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-3">',
+  );
+  $types = array('' => t('Default'), 'striped' => t('Striped'), 'striped active' => t('Striped Active'));
+  $form['type'] = array(
+    '#type' => 'select',
+    '#title' => t('Type'),
+    '#options' => $types,
+    '#default_value' => isset($attrs['type']) ? $attrs['type'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_accordions($attrs, $text) {
+  global $accordions;
+  $attrs['class'] = 'panel-group ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . ' id = "accordions-' . $accordions++ .'">' . $text . '</div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_accordions_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Accordion:</strong><br/>[accordions]<br/>&nbsp;&nbsp;[accordion title = "Accordion Panel #1"]Text[/accordion]<br/>[/accordions]';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_accordion($attrs, $text) {
+  global $accordion_count, $accordions;
+  $accordion_count++;
+  $attrs['class'] = 'panel panel-default ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" class = "' . (isset($attrs['active']) && $attrs['active'] ? '' : 'collapsed') . '" data-parent="#accordions-' . $accordions .'" href="#accordion-' .  $accordion_count . '">
+          ' . $attrs['title'] . '
+        </a>
+      </h4>
+    </div>
+    <div id="accordion-' . $accordion_count . '" class="panel-collapse collapse' . (isset($attrs['active']) && $attrs['active'] ? ' in' : '') . '">
+      <div class="panel-body">
+        ' . $text . '
+      </div>
+    </div>
+  </div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_accordion_settings($attrs, $text) {
+  $form['title'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['active'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Active'),
+    '#default_value' => isset($attrs['active']) ? $attrs['active'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_delimiter($attrs, $text) {
+  $attrs['class'] = 'lg ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<hr ' . _stability_shortcodes_shortcode_attributes($attrs)  . '/>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_delimiter_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Delimiter line:</strong><br/>[delimiter][/delimiter]</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_spacer($attrs, $text) {
+  $attrs['class'] = 'spacer ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '/></div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_spacer_settings($attrs, $text) {
+  $form['style_height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Height'),
+    '#default_value' => isset($attrs['style_height']) ? $attrs['style_height'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_spacer_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Spacer:</strong><br/>[spacer][/spacer]</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_container($attrs, $text) {
+  $attrs['class'] = 'container ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs) .'>' . $text . '</div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_container_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Responsive container:</strong><br/>[container]Content[/container]</br>';
+  $output[] = 'Use this for non-full width content.</p>';
+  $output[] = '<p><strong>Responsive columns:</strong><br/>[row]<br/>[col phone = 12 tablet = 12 desktop = 6 wide = 6]Content with date[/col][/row]</br>';
+  $output[] = 'Describe how many rows will take col in different devices: phone, tablet, desktop, wide. From 1 to 12 rows.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_row($attrs, $text) {
+  $attrs['class'] = 'row ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs) .'>' . $text . '</div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_row_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Responsive columns:</strong><br/>[row]<br/>[col phone = 12 tablet = 12 desktop = 6 wide = 6]Content with date[/col][/row]</br>';
+  $output[] = 'Describe how many rows will take col in different devices: phone, tablet, desktop, wide. From 1 to 12 rows.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_col($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  if(isset($attrs['phone'])) {
+    $attrs['class'] .= ' col-xs-' . $attrs['phone'];
+  }
+  if(isset($attrs['tablet'])) {
+    $attrs['class'] .= ' col-sm-' . $attrs['tablet'];
+  }
+  if(isset($attrs['desktop'])) {
+    $attrs['class'] .= ' col-md-' . $attrs['desktop'];
+  }
+  if(isset($attrs['wide'])) {
+    $attrs['class'] .= ' col-lg-' . $attrs['wide'];
+  }
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_message($attrs, $text) {
+  $attrs['class'] = 'alert' . (isset($attrs['class']) ? ' ' . $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['color']) && $attrs['color'] ? ' ' . $attrs['color'] : '';
+  $attrs['class'] .= isset($attrs['dismissable']) && $attrs['dismissable'] ? ' alert-dismissable' : '';
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '><button type="button" class="close" data-dismiss="alert" aria-hidden="true"><i class="fa fa-times"></i></button>' . $text . '</div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_message_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Message box:</strong><br/>[message][/message]</br>';
+  $output[] = 'Available classes: alert-danger, alert-info, alert-warning, alert-success, alert-dismissable.</p>';
+  return implode(' ', $output);
+}
+
+
+function stability_shortcodes_shortcode_message_settings($attrs, $text) {
+  $colors = array('alert-danger' => t('Red'), 'alert-info' => t('Blue'), 'alert-warning' => t('Orange'), 'alert-success' => t('Green'));
+  $form['color'] = array(
+    '#type' => 'radios',
+    '#title' => t('Color'),
+    '#options' => $colors,
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : 'alert-danger',
+    '#attributes' => array('class' => array('color-radios')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['dismissable'] = array(
+    '#title' => t('Dismissable'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($attrs['dismissable']) ? $attrs['dismissable'] : FALSE,
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_tabs($attrs, $text) {
+  global $tab_content;
+  $attrs['class'] = 'tabs ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>
+    <ul class = "nav nav-tabs">' .
+      $text .
+    '</ul>
+    <div class = "tab-content">' .
+      $tab_content .
+    '</div>
+    </div>';
+  $tab_content = '';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_tabs_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Tabs:</strong><br/>[tabs]<br/>[tab title = "title" icon = "fa fa-user"]Text[/tab][/tabs]</br>';
+  $output[] = 'Available variables: <strong>title</strong> - tabs of the title, <strong>icon</strong> - font class of the icon.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_tab($attrs, $text) {
+  global $tab_counter;
+  global $tab_content;
+  $tab_counter++;
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  $attrs['class'] .= $tab_content == '' ? ' active' : '';
+  $class = shortcode_add_class($attrs['class']);
+  $icon = isset($attrs['icon']) ? '<i class = "' . $attrs['icon'] .'"></i>' : '';
+  $output = '<li ' . _stability_shortcodes_shortcode_attributes($attrs)  . '><a href = "#tab-' . $tab_counter . '" data-toggle = "tab">' . $icon . (isset($attrs['title']) ? $attrs['title'] : '') . '</a></li>';
+  if($tab_content == '') {
+    $class .= ' in';
+  }
+  $tab_content .= '<div class="tab-pane fade ' . $class .  '" id="tab-' . $tab_counter . '">' . $text . '</div>';
+
+  return $output;
+}
+
+function stability_shortcodes_shortcode_tab_settings($attrs, $text) {
+  $form['title'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['active'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Active'),
+    '#default_value' => isset($attrs['active']) ? $attrs['active'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_button($attrs, $text) {
+  $attrs['class'] = 'btn ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['color']) && (!isset($attrs['color_type']) || !$attrs['color_type']) ? ' ' . $attrs['color'] : '';
+  $attrs['class'] .= isset($attrs['size']) ? ' ' . $attrs['size'] : '';
+  if(isset($attrs['color_type']) && $attrs['color_type'] && isset($attrs['custom_color']) && $attrs['custom_color']) {
+    $attrs['style_background_color'] = trim($attrs['custom_color'], '#');
+    if(strtolower($attrs['style_background_color']) == 'ffffff') {
+      $attrs['class'] .= ' btn-white';
+    }
+  }
+  $attrs['link'] = isset($attrs['link']) ? $attrs['link'] : '#';
+  $attrs['href'] = strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link'];
+  $text .= isset($attrs['text']) ? $attrs['text'] : '';
+  $text = isset($attrs['icon']) ? '<i class = "' . $attrs['icon'] . '"></i>&nbsp; ' . $text : $text;
+  $text = '<a ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>' . $text . '</a>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_button_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Button Link:</strong><br/>[button class="btn-lg btn-default" link = "contact"]Text[/button]</br>';
+  $output[] = '<strong>link</strong> - URL to linked content.</br>';
+  $output[] = 'Available size classes: <strong>btn-lg</strong> - Big, <strong>btn-sm</strong> - Small, by default - Medium.</br>';
+  $output[] = 'Available color classes: <strong>btn-default</strong>, <strong>btn-primary</strong>, <strong>btn-info</strong>, <strong>btn-success</strong>, <strong>btn-warning</strong>, <strong>btn-danger</strong></p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_button_settings($attrs, $text) {
+  $form['icon'] = array(
+    '#title' => t('Icon'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/icons_autocomplete/font_awesome',
+    '#default_value' => isset($attrs['icon']) ? $attrs['icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $sizes = array('btn-xs' => t('Small'),  'btn-sm' => t('Medium'), '' => t('Default'), 'btn-lg' => t('Large'));
+  $form['size'] = array(
+    '#type' => 'select',
+    '#title' => t('Size'),
+    '#options' => $sizes,
+    '#default_value' => isset($attrs['size']) ? $attrs['size'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['text'] = array(
+    '#title' => t('Text'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['text']) ? $attrs['text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['color_type'] = array(
+    '#title' => t('Custom Color'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($attrs['color_type']) ? $attrs['color_type'] : FALSE,
+    '#attributes' => array('class' => array('color-type-select')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $colors = array('btn-default' => t('Default'), 'btn-danger' => t('Red'), 'btn-info' => t('Blue'), 'btn-warning' => t('Orange'), 'btn-success' => t('Green'), 'btn-primary' => t('Dark Blue'));
+  $form['color'] = array(
+    '#type' => 'radios',
+    '#title' => t('Color'),
+    '#options' => $colors,
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : 'btn-default',
+    '#attributes' => array('class' => array('color-radios')),
+    '#states' => array(
+      'visible' => array(
+        '.color-type-select' => array('checked' => FALSE),
+      ),
+    ),
+    '#prefix' => '</div><div class = "col-sm-6">',
+  );
+  $form['custom_color'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Color'),
+    '#default_value' => isset($attrs['custom_color']) ? $attrs['custom_color'] : '',
+    '#states' => array(
+      'visible' => array(
+        '.color-type-select' => array('checked' => TRUE),
+      ),
+    ),
+    '#attributes' => array('class' => array('form-control colorpicker-enable')),
+    '#suffix' => '</div></div>',
+  );
+
+  return $form;
+}
+
+function stability_shortcodes_shortcode_calltoaction($attrs, $text) {
+  $attrs['class'] = 'call-to-action ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['centered']) && $attrs['centered']? ' centered' : '';
+  $link = isset($attrs['link']) ? (strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link']) : '#';
+  $link_class = isset($attrs['color']) ? $attrs['color'] : (isset($attrs['link_class']) ? $attrs['link_class'] : 'btn-primary');
+  $link_text = isset($attrs['link_text']) ? $attrs['link_text'] : t('Read More');
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>
+    <div class="cta-txt">
+      ' . $text . '
+    </div>
+    <div class="cta-btn">
+      <a class="btn ' . $link_class . '" href = "' . $link . '">' . $link_text . '</a>
+    </div>
+  </div>';
+  return $text;
+}
+
+
+function stability_shortcodes_shortcode_calltoaction_settings($attrs, $text) {
+  $form['link_text'] = array(
+    '#title' => t('Link text'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['link_text']) ? $attrs['link_text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-4">',
+  );
+  $colors = array('btn-default' => t('Default'), 'btn-danger' => t('Red'), 'btn-info' => t('Blue'), 'btn-warning' => t('Orange'), 'btn-success' => t('Green'), 'btn-primary' => t('Dark Blue'));
+  $form['color'] = array(
+    '#type' => 'radios',
+    '#title' => t('Link Color'),
+    '#options' => $colors,
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : 'btn-primary',
+    '#attributes' => array('class' => array('color-radios')),
+    '#prefix' => '</div><div class = "col-sm-4">',
+  );
+  $form['centered'] = array(
+    '#title' => t('Centered'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($attrs['centered']) ? $attrs['centered'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-4">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+
+function stability_shortcodes_shortcode_calltoaction_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Call to action:</strong><br/>[call_to_action class="centered" link = "contact" link_text = "Read More"]Text[/call_to_action]</br>';
+  $output[] = '<strong>link</strong> - URL to linked content.</br>';
+  $output[] = '<strong>link_text</strong> - Text on the link button. By default - "Read More"</br>';
+  $output[] = '<strong>link_class</strong> - Link button classes (see button section). By default - "btn-primary"</br>';
+  $output[] = 'Available classes: <strong>centered</strong> - Align text and link to center</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_iconbox($attrs, $text) {
+  $attrs['class'] = 'icon-box ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['type']) && $attrs['type']? ' '. $attrs['type'] : '';
+  $attrs['class'] .= isset($attrs['align']) && $attrs['align']? ' '. $attrs['align'] : '';
+  $attrs['class'] .= isset($attrs['animated']) && $attrs['animated']? ' icon-box-animated' : '';
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>
+    <div class="icon">
+      <i class="' . $attrs['icon'] . '"></i>' .
+      (isset($attrs['bg_icon']) && $attrs['bg_icon'] ? '<i class="' . $attrs['bg_icon'] . ' bg-icon"></i>': '') . '
+    </div>
+    <div class="icon-box-body">
+      ' . $text . '
+    </div>
+  </div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_iconbox_settings($attrs, $text) {
+  $form['icon'] = array(
+    '#title' => t('Icon'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/icons_autocomplete/font_awesome',
+    '#default_value' => isset($attrs['icon']) ? $attrs['icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['bg_icon'] = array(
+    '#title' => t('Background Big Icon'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/icons_autocomplete/font_awesome',
+    '#default_value' => isset($attrs['bg_icon']) ? $attrs['bg_icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $types = array('' => t('Default'), 'centered' => t('Centered'),  'circled' => t('Circled'), 'squared' => t('Squared'));
+  $form['type'] = array(
+    '#type' => 'select',
+    '#title' => t('Type'),
+    '#options' => $types,
+    '#default_value' => isset($attrs['type']) ? $attrs['type'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $align = array('' => t('Right'), 'icon-right icon-top-padding' => t('Left'));
+  $form['align'] = array(
+    '#type' => 'select',
+    '#title' => t('Align'),
+    '#options' => $align,
+    '#default_value' => isset($attrs['align']) ? $attrs['align'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['animated'] = array(
+    '#title' => t('Animated on mouse hover'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($attrs['animated']) ? $attrs['animated'] : FALSE,
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+
+  return $form;
+}
+
+
+function stability_shortcodes_shortcode_iconbox_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Icon Box:</strong><br/>[icon_box class="centered" icon = "fa fa-user" big_icon]Text[/icon_box]</br>';
+  $output[] = 'Available attributes: <strong>icon</strong> - Icon font class, <strong>bg_icon</strong> - Big half-transparent icon on the background</br>';
+  $output[] = 'Available classes: <strong>centered</strong> - Align text and icon to center, <strong>circled</strong> - Round Icon, <strong>squared</strong> - Square styled icon, <strong>icon-box-animated</strong> - Mouse hover animation.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_pricing_table($attrs, $text) {
+  global $pricing_table_cols;
+  $attrs['class'] = 'pricing-table ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['type']) ? ' ' . $attrs['type'] : '';
+  $output = '<div class = "row"><div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>';
+  $bootstrap_class = array(1 => 12, 2 => 6, 3 => 4, 4 => 3, 6 => 2, 12 => 1);
+  $col_class = isset($bootstrap_class[count($pricing_table_cols)]) ? $bootstrap_class[count($pricing_table_cols)] : 3;
+  foreach($pricing_table_cols as $col) {
+    $output .= '<div class = "col-md-' . $col_class . '">' . $col . '</div>';
+  }
+  $output .= '</div></div>';
+  $pricing_table_cols = array();
+  return $output;
+}
+
+function stability_shortcodes_shortcode_pricing_table_settings($attrs, $text) {
+  $types = array('' => t('Default'), 'pricing-table__style2' => t('Style 2'),  'pricing-table__style3' => t('Style 3'), 'pricing-table__style4' => t('Style 4'));
+  $form['type'] = array(
+    '#type' => 'select',
+    '#title' => t('Type'),
+    '#options' => $types,
+    '#default_value' => isset($attrs['type']) ? $attrs['type'] : '',
+    '#attributes' => array('class' => array('form-control')),
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_pricing_table_col($attrs, $text) {
+  global $pricing_table_cols;
+  if (!is_array($pricing_table_cols)) {
+    $pricing_table_cols = array();
+  }
+  global $pricing_table_rows;
+  $attrs['class'] = 'plan' . (isset($attrs['class']) ? ' ' . $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['type']) ? ' ' . $attrs['type'] : '';
+  $attrs['class'] .= isset($attrs['popular']) && $attrs['popular'] ? ' popular' : '';
+  $link = strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link'];
+  $btn_class = strpos($attrs['class'], 'popular') !== FALSE ? 'btn-primary' : 'btn-default';
+  $price = '<span class="price"><sup>' . (isset($attrs['currency']) ? $attrs['currency'] : '$') . '</sup> ' . $attrs['price'] . '</span><small>' . (isset($attrs['price_text']) ? $attrs['price_text'] : '') . '</small>';
+  $title = '<h3>' . $attrs['title'] . '</h3>';
+
+  if(strpos($attrs['class'], 'style2') !== FALSE || strpos($attrs['class'], 'style3') !== FALSE) {
+    $header = '
+      <div class="circled">
+        <div class="circled-inner">
+          ' . $price . '
+        </div>
+      </div>' . $title;
+    $btn_class = strpos($attrs['class'], 'style3') !== FALSE ? 'btn-default' : $btn_class;
+  }
+  elseif(strpos($attrs['class'], 'style4') !== FALSE) {
+    $header = $title .
+      '<div class="pricing-head-inner">
+        ' . $price . '
+      </div>';
+      $btn_class = 'btn-default';
+  }
+  else {
+    $header = $title . $price; 
+  }
+  $button = isset($attrs['button']) ? '<a href="' . $link .  '" class="btn ' . $btn_class . '">' . $attrs['button'] . '</a>' : '';
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>
+    <header class="pricing-head">
+      ' . $header . '
+    </header>
+    <div class="pricing-body">
+      <ul>
+        ' . $pricing_table_rows . '
+      </ul>
+    </div>
+    <footer class="pricing-footer">
+      ' . $button . '
+    </footer>
+  </div>';
+  $pricing_table_cols []= $text;
+  $pricing_table_rows = '';
+  return '';
+}
+
+
+function stability_shortcodes_shortcode_pricing_table_col_settings($attrs, $text) {
+  $types = array('' => t('Default'), 'style2' => t('Style 2'),  'style3' => t('Style 3'), 'style4' => t('Style 4'));
+  $form['type'] = array(
+    '#type' => 'select',
+    '#title' => t('Type'),
+    '#options' => $types,
+    '#default_value' => isset($attrs['type']) ? $attrs['type'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['popular'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Active'),
+    '#default_value' => isset($attrs['popular']) && $attrs['popular'] ? $attrs['popular'] : FALSE,
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',    
+  );
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',    
+  );
+  $form['price'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Price'),
+    '#default_value' => isset($attrs['price']) ? $attrs['price'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-3">',
+  );
+  $form['currency'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Currency'),
+    '#default_value' => isset($attrs['currency']) ? $attrs['currency'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+  );
+  $form['price_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Price Text'),
+    '#default_value' => isset($attrs['price_text']) ? $attrs['price_text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+  );
+  $form['button'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Button Text'),
+    '#default_value' => isset($attrs['button']) ? $attrs['button'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',    
+  );
+
+  return $form;
+}
+
+function stability_shortcodes_shortcode_pricing_table_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Pricing Table:</strong><br/>[pricing_table title = "Basic" class = "active" price = "19" currency = "$" price_text = "per month"]<br/>
+  &nbsp;[pricing_table_row]Text[/pricing_table_row]<br/>
+  [/pricing_table]</br>';
+  $output[] = 'Available variables: <strong>title</strong> - Column title, <strong>price</strong>, <strong>currency</strong>, <strong>price_text</strong> - Price description, <strong>button</strong> - Link Button text, <strong>link</strong> - Button link.<br/>';
+  $output[] = 'Available classes: <strong>popular</strong> - highlited column.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_pricing_table_row($attrs, $text) {
+  global $pricing_table_rows;
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  $pricing_table_rows .= '<li ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>' . $text . '</li>';
+  return '';
+}
+
+function stability_shortcodes_shortcode_dropcap($attrs, $text) {
+  $attrs['class'] = 'dropcap ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['class'] .= isset($attrs['type']) ? ' ' . $attrs['type'] : '';
+  $text .= (isset($attrs['text']) ? $attrs['text'] : '');
+  $text = '<span ' . _stability_shortcodes_shortcode_attributes($attrs)  . ' >' . $text . '</span>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_dropcap_settings($attrs, $text) {
+  $form = array();
+  $form['text'] = array(
+    '#title' => t('Text'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['text']) ? $attrs['text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $types = array('' => t('Default'), 'dropcap__rounded' => t('Rounded'));
+  $form['type'] = array(
+    '#title' => t('Type'),
+    '#type' => 'select',
+    '#options' => $types,
+    '#default_value' => isset($attrs['type']) ? $attrs['type'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>'
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_dropcap_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Dropcap:</strong><br/>[dropcap class="dropcap__rounded"]H[/dropcap]</br>';
+  $output[] = 'Available size classes: <strong>dropcap__rounded</strong>Round Dropcap</p>';
+  return implode(' ', $output);
+}
+
+
+function stability_shortcodes_shortcode_view($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  $view = '';
+  if (strpos($attrs['admin_url'], 'admin/structure/views/view') !== FALSE) {
+    $view_name = substr($attrs['admin_url'], strpos($attrs['admin_url'], 'view/') + 5);
+    $parts = explode('/', $view_name);
+    $view_name = $parts[0];
+    $view = isset($parts[2]) ? views_embed_view($view_name, $parts[2]) : views_embed_view($view_name);
+  }
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>' . $view . '</div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_view_description($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'admin/structure/views/view') !== FALSE) {
+    $form = stability_shortcodes_shortcode_view_settings($attrs, $text);
+    $value = l($form['admin_url']['#options'][$attrs['admin_url']], $attrs['admin_url'], array('attributes' => array('target' => '_blank')));
+    return $value;
+  }
+}
+
+function stability_shortcodes_shortcode_view_settings($attrs, $text) {
+  $query = db_select('views_display', 'v');
+  $query->leftJoin('views_view', 'vv', 'vv.vid = v.vid');
+  $return = $query
+    ->fields('v', array('id', 'display_title'))
+    ->fields('vv', array('name', 'human_name'))
+    ->condition('v.display_title', 'Master', '<>')
+    ->execute();
+  $views = array();
+  foreach ($return as $row) {
+    $views['admin/structure/views/view/' . $row->name . '/edit/' . $row->id] = check_plain($row->human_name . ': ' . $row->display_title);
+  }
+  asort($views);
+  $form['admin_url'] = array(
+    '#title' => t('View'),
+    '#type' => 'select',
+    '#options' => $views,
+    '#default_value' => isset($attrs['admin_url']) ? $attrs['admin_url'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_view_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>View embed:</strong><br/>[view admin_url="admin/structure/views/view/blog"][/view]</br>';
+  $output[] = '<strong>admin_url</strong> - Administrative url of required view display.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_block($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'admin/structure/block') !== FALSE) {
+    $block_name = substr($attrs['admin_url'], strpos($attrs['admin_url'], '/manage/') + 8);
+    $parts = explode('/', $block_name);
+    $block = _nikadevs_render_block($parts[0], $parts[1]);
+    $block = render($block);
+  }
+  $attrs_output = _stability_shortcodes_shortcode_attributes($attrs);
+  $text = $attrs_output ? '<div ' . $attrs  . '>' . $block . '</div>' : $block;
+  return $text;
+}
+
+function stability_shortcodes_shortcode_block_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Block:</strong><br/>[block admin_url = "admin/structure/block/manage/stability_cms/gmap/configure"][/block]</br>';
+  $output[] = '<strong>admin_url</strong> - URL of the block edit page.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_block_settings($attrs, $text) {
+  module_load_include('inc', 'block', 'block.admin');
+  $current_theme = variable_get('theme_default', 'none');
+  $blocks = block_admin_display_prepare_blocks($current_theme);
+  usort($blocks, '_sort_blocks');
+  $options = array();
+  foreach ($blocks as $block) {
+    $options['admin/structure/block/manage/' . $block['module']  .'/' . $block['delta'] . '/configure'] = check_plain($block['info']);
+  }
+  asort($options);
+  $form['admin_url'] = array(
+    '#title' => t('Block'),
+    '#type' => 'select',
+    '#options' => $options,
+    '#default_value' => isset($attrs['admin_url']) ? $attrs['admin_url'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_block_description($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'admin/structure/block') !== FALSE) {
+    $form = stability_shortcodes_shortcode_block_settings($attrs, $text);
+    $value = l($form['admin_url']['#options'][$attrs['admin_url']], $attrs['admin_url'], array('attributes' => array('target' => '_blank')));
+    return $value;
+  }
+}
+
+function stability_shortcodes_shortcode_node($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'node/') !== FALSE) {
+    $node_name = substr($attrs['admin_url'], strpos($attrs['admin_url'], 'node/') + 5);
+    $parts = explode('/', $node_name);
+    $output = is_numeric($parts[0]) ? render(node_view(node_load($parts[0]))) : '';
+  }
+  $text = $attrs = _stability_shortcodes_shortcode_attributes($attrs) ? '<div ' . $attrs  . '>' . $output . '</div>' : $output;
+  return $text;
+}
+
+function stability_shortcodes_shortcode_node_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Node:</strong><br/>[node admin_url = "node/1/edit"][/node]</br>';
+  $output[] = '<strong>admin_url</strong> - URL of the node edit page.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_node_description($attrs, $text) {
+  if (strpos($attrs['admin_url'], 'node/') !== FALSE) {
+    $node_name = substr($attrs['admin_url'], strpos($attrs['admin_url'], 'node/') + 5);
+    $parts = explode('/', $node_name);
+    $nid = $parts[0];
+    if(is_numeric($nid)) {
+      $node = node_load($nid);
+      return l($node->title, 'node/' . $nid . '/edit', array('attributes' => array('target' => '_blank')));
+    }
+  }
+}
+
+function stability_shortcodes_shortcode_node_settings($attrs, $text) {
+  $form['admin_url'] = array(
+    '#title' => t('Node Title'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/node_autocomplete',
+    '#default_value' => isset($attrs['admin_url']) ? $attrs['admin_url'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_featured_boxes($attrs, $text) {
+  global $featured_boxes;
+  $attrs['class'] = 'featured-section ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  if(strpos($attrs['class'], 'parallax-bg') !== FALSE) {
+    $attrs['stellar_ratio'] = 2;
+    $attrs['background_ratio'] = 0.5;
+  }
+  $output = '<section ' . _stability_shortcodes_shortcode_attributes($attrs)  . '><div class = "row">';
+  $bootstrap_class = array(1 => 12, 2 => 6, 3 => 4, 4 => 3, 6 => 2);
+  $col_class = isset($bootstrap_class[count($featured_boxes)]) ? $bootstrap_class[count($featured_boxes)] : 2;
+  foreach($featured_boxes as $col) {
+    $output .= '<div class = "col-sm-6 col-md-' . $col_class . '">' . $col . '</div>';
+  }
+  $output .= '</div></section>';
+  $pricing_table_cols = array();
+  return $output;
+}
+
+function stability_shortcodes_shortcode_featured_box($attrs, $text) {
+  global $featured_boxes;
+  if (!is_array($featured_boxes)) {
+    $featured_boxes = array();
+  }
+  $attrs = shortcode_attrs(array(
+      'title' => '',
+      'subtitle' => '',
+      'link' => '#',
+      'icon' => '',
+      'class' => ''
+    ),
+    $attrs
+  );
+  $attrs['class'] .= ' featured-item';
+  $link = strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link'];
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>
+    <a href="' . $link .  '" class="featured-link">
+      <div class="featured-desc">
+        <h5 class="featured-subtitle">' . $attrs['subtitle'] . '</h5>
+        <p>' . $text . '</p>
+      </div>
+      <div class="featured-main">
+        <span class="featured-icon">
+          <i class="' . $attrs['icon'] . '"></i>
+        </span>
+        <h3 class="featured-title">' . $attrs['title'] . '</h3>
+      </div>
+    </a>
+  </div>';
+  $featured_boxes[] = $text;
+  return '';
+}
+
+function stability_shortcodes_shortcode_featured_boxes_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Fatured Boxes:</strong><br/>[featured_boxes]<br/>
+  &nbsp;[featured_box title = "Design" subtitle = "Donec id" icon = "fa fa-user"]Text[/featured_box]<br/>
+  [/featured_boxes]</br>';
+  $output[] = 'Available variables: <strong>title</strong>, <strong>subtitle</strong>, <strong>icon</strong></br>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_featured_box_settings($attrs, $text) {
+  $form['title'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  $form['subtitle'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Subtitle'),
+    '#default_value' => isset($attrs['subtitle']) ? $attrs['subtitle'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  $form['icon'] = array(
+    '#title' => t('Icon'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/icons_autocomplete/font_awesome',
+    '#default_value' => isset($attrs['icon']) ? $attrs['icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_video($attrs, $text) {
+  $attrs['class'] = 'alignnone' . (isset($attrs['class']) ? ' ' . $attrs['class'] : '');
+  $attrs['url'] = isset($attrs['url']) && $attrs['url'] ? $attrs['url'] : $text;
+  $iframe_attrs = (isset($attrs['width']) ? 'width="' . $attrs['width'] . '"' : '') . (isset($attrs['height']) ? ' height ="' . $attrs['height'] . '"' : '');
+  if(!$iframe_attrs) {
+    $attrs['class'] .= ' video-holder';
+  }
+  if(strpos($attrs['url'], 'vimeo') !== FALSE) {
+    $attrs['class'] .= ' vimeo';
+    preg_match('|/(\d+)|', $attrs['url'], $matches);
+    $video_url = '//player.vimeo.com/video/' . $matches[1] . '';
+  }
+  elseif(strpos($attrs['url'], 'youtu') !== FALSE) {
+    $attrs['class'] .= ' youtube';
+    $id = substr($attrs['url'], strpos($attrs['url'], '?v=') + 3);
+    $video_url = '//www.youtube.com/embed/' . $id .'?showinfo=0&amp;wmode=opaque';
+  }
+  if(isset($video_url)) {
+    $text = '<figure  ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>
+      <iframe src="' . $video_url . '" frameborder="0" ' . $iframe_attrs . ' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+    </figure>';
+  }
+  return $text;
+}
+
+function stability_shortcodes_shortcode_video_settings($attrs, $text) {
+  $attrs['url'] = isset($attrs['url']) && $attrs['url'] ? $attrs['url'] : $text;
+  $form['url'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Video Url'),
+    '#default_value' => isset($attrs['url']) ? $attrs['url'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#description' => t('Supports: YouTube and Vimeo')
+  );
+  $form['width'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Width'),
+    '#default_value' => isset($attrs['width']) ? $attrs['width'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['height'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Height'),
+    '#default_value' => isset($attrs['height']) ? $attrs['height'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_video_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Video iFrame:</strong><br/>[video]player.vimeo.com/video/7449107[/video]</br>';
+  $output[] = '<strong>iframe</strong> - Iframe URL of the video.</p>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_shape_box($attrs, $text) {
+  $attrs['class'] = 'shape-item';
+  $attrs['class'] .= isset($attrs['class']) ? ' ' . $attrs['class'] : '';
+  $link = strpos($attrs['link'], '#') === FALSE ? url($attrs['link']) : $attrs['link'];
+  $styles = array(
+    'line' => array(
+      'data-path-hover' => 'm 180,34.57627 -180,0 L 0,0 180,0 z',
+      'd' => 'M 180,160 0,218 0,0 180,0 z'
+    ),
+    'round' => array(
+      'data-path-hover' => 'm 0,0 0,47.7775 c 24.580441,3.12569 55.897012,-8.199417 90,-8.199417 34.10299,0 65.41956,11.325107 90,8.199417 L 180,0 z',
+      'd' => 'm 0,0 0,171.14385 c 24.580441,15.47138 55.897012,24.75772 90,24.75772 34.10299,0 65.41956,-9.28634 90,-24.75772 L 180,0 0,0 z'
+    ),
+    'triangle' => array(
+      'data-path-hover' => 'M 0,0 0,38 90,58 180.5,38 180,0 z',
+      'd' => 'M 0 0 L 0 182 L 90 126.5 L 180 182 L 180 0 L 0 0 z'
+    ),
+  );
+  $attrs['style'] = isset($attrs['style']) && isset($styles[$attrs['style']]) ? $attrs['style'] : 'line';
+  $style = $styles[$attrs['style']];
+  $classes = array('line' => 'shape-effect1', 'round' => 'shape-effect2', 'triangle' => 'shape-effect3');
+  $attrs['class'] .= ' ' . $classes[$attrs['style']];
+  if(isset($attrs['image_fid']) && $attrs['image_fid']) {
+    $file = file_load($attrs['image_fid']);
+    $attrs['image'] = isset($file->uri) ? file_create_url($file->uri) : '';
+  }
+  $text = strpos($text, '<p') !== 0 ? '<p>' . $text . '</p>' : $text;
+  $text = '
+    <a href="' . $link . '" ' . _stability_shortcodes_shortcode_attributes($attrs) . ' data-path-hover="' . $style['data-path-hover'] . '">
+      <figure>
+        <img src="' . $attrs['image'] . '" alt="">
+        <svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="' . $style['d'] . '"/></svg>
+        <figcaption>
+          <h3>' . $attrs['title'] . '</h3>
+          ' . $text . '
+          <button class="btn btn-primary btn-sm">' . (isset($attrs['link_text']) ? $attrs['link_text'] : t('View')) . '</button>
+        </figcaption>
+      </figure>
+    </a>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_shape_box_settings($attrs, $text) {
+  $form['title'] = array(
+    '#type' => 'textfield' ,
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $types = array('line' => t('Line'), 'round' => t('Round'), 'triangle' => t('Triangle'));
+  $form['style'] = array(
+    '#type' => 'select',
+    '#options' => $types,
+    '#title' => t('Style'),
+    '#default_value' => isset($attrs['style']) ? $attrs['style'] : 'line',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['link_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link Text'),
+    '#default_value' => isset($attrs['link_text']) ? $attrs['link_text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  // Save image URL for compatibility with old shortcode
+  if(isset($attrs['image']) && !isset($attrs['image_fid']) && !$attrs['image_fid']) {
+    $form['image'] = array(
+      '#type' => 'hidden',
+      '#default_value' => isset($attrs['image']) ? $attrs['image'] : '',
+      '#attributes' => array('class' => array('hidden')),
+    );
+  }
+  $filename = isset($attrs['image_fid']) && $attrs['image_fid'] ? file_load($attrs['image_fid'])->uri : '';
+  $image = $filename ? theme('image_style', array('style_name' => 'media_thumbnail', 'path' => $filename)) : '';
+  if(!$filename && isset($attrs['image']) && $attrs['image']) {
+    $image = '<img src = "' . $attrs['image'] . '" width = "64px"/>';
+  }
+  $form['image_fid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image'),
+    '#default_value' => isset($attrs['image_fid']) ? $attrs['image_fid'] : '',
+    '#states' => array(
+      'visible' => array(
+        '.type-sequence-select' => array('value' => 'image_background'),
+      ),
+    ),
+    '#attributes' => array('class' => array('image-media-upload hidden')),
+    '#field_suffix' => '<div class = "preview-image">' . $image . '</div><a href = "#" class = "media-upload button">' . t('Upload Image') .'</a><a href = "#" class = "media-remove button">' . t('Remove Image') .'</a>',
+  );
+ 
+  return $form;
+}
+
+function stability_shortcodes_shortcode_shape_box_tip($format, $long) {
+  $output = array();
+  $output[] = '<p><strong>Shape Box:</strong><br/>[shape_box title = "Title" image = "/lorem.img" style = "line" link = "contact" link_text = "view"]Description Text[/shape_box]</br>';
+  $output[] = 'Available variables: <strong>title</strong>, <strong>link</strong>, <strong>link_text</strong>, <strong>image</strong> - Full Url to Image, <strong>style</strong> - <b>line</b>, <b>round</b>, <b>triangle</b></br>';
+  return implode(' ', $output);
+}
+
+function stability_shortcodes_shortcode_html($attrs, $text) {
+  // Made a little hack for tables which can't be controled because rendered some WYSIWYG editor, and also list styles
+  $text = str_replace(array('<table', '<ul>', '</ul>', '<ol>'), array('<table class = "table table-bordered table-striped"', '<div class = "list"><ul>', '</ul></div>',  '<ol class = "list">'), $text);
+  $attrs_output = _stability_shortcodes_shortcode_attributes($attrs);
+  if($attrs_output) {
+    return '<div ' . $attrs_output . '>' . $text . '</div>';
+  }
+  return $text;
+}
+
+function stability_shortcodes_shortcode_title($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  $text = isset($attrs['title']) && $attrs['title'] ? $attrs['title'] : '';
+  if (isset($attrs['highlighted_text']) && $attrs['highlighted_text']) {
+    $text = isset($attrs['position']) && $attrs['position'] ? '<span>' . $attrs['highlighted_text'] . '</span> ' . $text : $text . ' <span>' . $attrs['highlighted_text'] . '</span>';
+  }
+  if(isset($attrs['decorated']) && $attrs['decorated']) {
+    $attrs['class'] .= $attrs['class'] . ' title-decorated';
+    $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs) . '><' . $attrs['size'] . '>' . $text . '</' . $attrs['size'] . '></div>';
+  }
+  else {
+    $text = '<' . $attrs['size'] . ' ' . _stability_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</' . $attrs['size'] . '>';
+  }
+  return $text;
+}
+
+function stability_shortcodes_shortcode_title_settings($attrs, $text) {
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $size = array('h1' => t('H1'), 'h2' => t('H2'), 'h3' => t('H3'), 'h4' => t('H4'), 'h5' => t('H5'));
+  $form['size'] = array(
+    '#type' => 'select' ,
+    '#options' => $size,
+    '#title' => t('Size'),
+    '#default_value' => isset($attrs['size']) ? $attrs['size'] : 'h1',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',
+  );
+  $form['highlighted_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Highlighted text'),
+    '#default_value' => isset($attrs['highlighted_text']) ? $attrs['highlighted_text'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $position = array('' => t('After'), 'before' => t('Before'));
+  $form['position'] = array(
+    '#type' => 'select' ,
+    '#options' => $position,
+    '#title' => t('Position'),
+    '#default_value' => isset($attrs['position']) ? $attrs['position'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',
+  );
+  $form['decorated'] = array (
+    '#type' => 'checkbox',
+    '#title' => t('Decorated'),
+    '#default_value' => isset($attrs['decorated']) ? $attrs['decorated'] : FALSE,
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-2">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_list_container($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  return '<ul ' . _stability_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</ul>';
+}
+
+function stability_shortcodes_shortcode_list_item($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  return '<li ' . _stability_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</li>';
+}
+
+function stability_shortcodes_shortcode_div($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  return '<div ' . _stability_shortcodes_shortcode_attributes($attrs) . '>' . $text . '</div>';
+}
+
+function stability_shortcodes_shortcode_image($attrs, $text) {
+  $text = trim($text);
+  $attrs['extra_classes'] = isset($attrs['extra_classes']) ? $attrs['extra_classes'] : '';
+  $file = isset($attrs['fid']) && !empty($attrs['fid']) ? file_load($attrs['fid']) : '';
+  $uri = isset($file->uri) ? $file->uri : '';
+  if(!$uri) {
+    return '';
+  }
+  $title = isset($attrs['title']) ? $attrs['title'] : '';
+  $attributes = array('style' => '', 'class' => '');
+  if(isset($attrs['width']) && $attrs['width']) {
+    $attributes['style'] .= 'width:' . $attrs['width'] . 'px;';
+  }
+  if(isset($attrs['height']) && $attrs['height']) {
+    $attributes['style'] .= 'height:' . $attrs['height'] . 'px;';
+  }
+  if(isset($attrs['link']) && $attrs['link']) {
+    $attrs['href'] =  $attrs['link'];
+  }
+  else {
+    $attributes['class'] .= $attrs['extra_classes'];
+    //$attributes['class'] .= isset($attrs['hover']) && $attrs['hover'] ? '' : ' img-responsive'; 
+    $attrs['href'] = '';
+  }
+  if(isset($attrs['image_style']) && $attrs['image_style']) {
+    $img = theme('image_style', array('style_name' => $attrs['image_style'], 'title' => '', 'path' => $uri, 'attributes' => $attributes));
+  }
+  else {
+    $img = theme('image', array('title' => '', 'path' => $uri, 'attributes' => $attributes));
+  }
+  $text = $attrs['href'] ? '<a ' . _stability_shortcodes_shortcode_attributes($attrs) . '>' . $img . '</a>' : $img;
+  $text = isset($attrs['hover']) && $attrs['hover'] ? '<div class="person-holder">' . $text . '</div>' : '<figure class = "alignone">' . $text . '</figure>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_image_settings($attrs, $text) {
+  $filename = isset($attrs['fid']) && !empty($attrs['fid']) ? file_load($attrs['fid'])->uri :'';
+  $image = $filename ? theme('image_style', array('style_name' => 'media_thumbnail', 'path' => $filename)) : '';
+  $form['fid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image'),
+    '#default_value' => isset($attrs['fid']) ? $attrs['fid'] : '',
+    '#attributes' => array('class' => array('image-media-upload hidden')),
+    '#field_suffix' => '<div class = "preview-image">' . $image . '</div><a href = "#" class = "media-upload button">' . t('Upload Image') .'</a><a href = "#" class = "media-remove button">' . t('Remove Image') .'</a>',
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $styles = array('' => t(' - Original - '));
+  foreach(image_styles() as $name => $style) {
+    $styles[$name] = $style['label'];
+  }
+  $form['image_style'] = array(
+    '#type' => 'select',
+    '#title' => t('Image Style'),
+    '#options' => $styles,
+    '#default_value' => isset($attrs['image_style']) ? $attrs['image_style'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+  );
+  $aligns = array('' => t(' - None - '), 'center' => t('Center'), 'left' => t('Left'), 'right' => t('Right'));
+  $form['style_align'] = array(
+    '#type' => 'select',
+    '#title' => t('Align'),
+    '#options' => $aligns,
+    '#default_value' => isset($attrs['align']) ? $attrs['align'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',
+  );
+  $form['link'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link'),
+    '#default_value' => isset($attrs['link']) ? $attrs['link'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Width'),
+    '#default_value' => isset($attrs['width']) ? $attrs['width'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+  );
+  $form['height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Height'),
+    '#default_value' => isset($attrs['height']) ? $attrs['height'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',
+  );
+  $form['hover'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hover animation'),
+    '#default_value' => isset($attrs['hover']) ? $attrs['hover'] : FALSE,
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_bg($attrs, $text) {
+  $attrs['class'] = isset($attrs['class']) ? $attrs['class'] : '';
+  $attrs['class'] .= isset($attrs['full_width']) && $attrs['full_width'] ? ' background-fullwidth' : '';
+  $attrs['class'] .= isset($attrs['vpaddings']) && $attrs['vpaddings'] ? ' section-no-v-paddings' : '';
+  $attrs['class'] .= isset($attrs['vmargins']) && $attrs['vmargins'] ? ' section-no-v-margins' : '';
+  $attrs['class'] .= isset($attrs['social']) && $attrs['social'] ? ' social-links-section icons-rounded' : '';
+  $file = isset($attrs['fid']) && !empty($attrs['fid']) ? file_load($attrs['fid']) : '';
+  if (isset($file->uri) && isset($attrs['parallax']) && $attrs['parallax']) {
+    $attrs['data-background'] = file_create_url($file->uri);
+    $attrs['style'] = (isset($attrs['style']) ? $attrs['style'] : '') . 'background-image: url(' . file_create_url($file->uri) . ');';
+    $attrs['data-stellar-background-ratio'] = '0.5';
+    $attrs['data-stellar-ratio'] = '2';
+    $attrs['class'] .= ' parallax-bg featured-section';
+  }
+
+  if (!isset($attrs['style_background_image'])) {
+    if (isset($attrs['social']) && $attrs['social']) {
+      $attrs['class'] .= isset($attrs['color']) && $attrs['color'] == 'bg-dark-gray' ? ' social-links-section__dark' : '';
+    }
+    else {
+      $attrs['class'] .= isset($attrs['color']) ? ' ' . $attrs['color'] : '';
+    }  
+  }
+  reset($attrs);
+  $text = '<section ' . _stability_shortcodes_shortcode_attributes($attrs)  . '>' . $text . '</section>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_bg_settings($attrs, $text) {
+  $form['full_width'] = array (
+    '#type' => 'checkbox',
+    '#title' => t('Full width'),
+    '#default_value' => isset($attrs['full_width']) ? $attrs['full_width'] : FALSE,
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-3">',
+  );
+  $form['vpaddings'] = array (
+    '#type' => 'checkbox',
+    '#title' => t('No vertical paddings'),
+    '#default_value' => isset($attrs['vpaddings']) ? $attrs['vpaddings'] : FALSE,
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+  );
+  $form['vmargins'] = array (
+    '#type' => 'checkbox',
+    '#title' => t('No vertical margins'),
+    '#default_value' => isset($attrs['vmargins']) ? $attrs['vmargins'] : FALSE,
+    '#prefix' => '</div><div class = "col-sm-3">',
+  );
+  $form['parallax'] = array (
+    '#type' => 'checkbox',
+    '#title' => t('Parallax'),
+    '#default_value' => isset($attrs['parallax']) ? $attrs['parallax'] : FALSE,
+    '#attributes' => array('class' => array('parallax-selector')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',
+  );
+  $colors = array('' => t('White'), 'section primary' => t('Red'), 'bg-light' => t('Light'), 'bg-gray' => t('Gray'), 'bg-dark-gray' => t('Dark Gray'));
+  $form['color'] = array(
+    '#type' => 'radios',
+    '#title' => t('Color'),
+    '#options' => $colors,
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : '',
+    '#attributes' => array('class' => array('color-radios')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['social'] = array (
+    '#type' => 'checkbox',
+    '#title' => t('Social Links'),
+    '#default_value' => isset($attrs['social']) ? $attrs['social'] : FALSE,
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-3">',
+    '#suffix' => '</div></div>',
+  );
+  $filename = isset($attrs['fid']) && !empty($attrs['fid']) ? file_load($attrs['fid'])->uri :'';
+  $image = $filename ? theme('image_style', array('style_name' => 'media_thumbnail', 'path' => $filename)) : '';
+  $form['fid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image'),
+    '#default_value' => isset($attrs['fid']) ? $attrs['fid'] : '',
+    '#attributes' => array('class' => array('image-media-upload hidden')),
+    '#field_suffix' => '<div class = "preview-image">' . $image . '</div><a href = "#" class = "media-upload button">' . t('Upload Image') .'</a><a href = "#" class = "media-remove button">' . t('Remove Image') .'</a>',
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+    '#states' => array(
+      'visible' => array(
+        '.parallax-selector' => array('checked' => TRUE),
+      )
+    ),
+  );
+  return $form;
+}  
+
+function stability_shortcodes_shortcode_circle_counter($attrs, $text){
+  $attrs['class'] = 'circled-counter circliful ' . (isset($attrs['class']) ? $attrs['class'] : '');
+  $attrs['style'] = 'width: 190px;';
+  $attrs['data-bgcolor'] = 'transparent';
+  $attrs['data-fgcolor'] = isset($attrs['color']) ? '#' . trim($attrs['color'], '#') : '';
+  $attrs['data-percent'] = isset($attrs['percent']) ? $attrs['percent'] : '';
+  $attrs['data-fontsize'] = '28';
+  $attrs['data-width'] = isset($attrs['width']) ? $attrs['width'] : '';
+  $attrs['data-dimension'] = '190';
+  $attrs['data-info'] = isset($attrs['title']) ? $attrs['title'] : '';
+  $attrs['data-text'] = isset($attrs['amount']) ? $attrs['amount'] : '';
+  $attrs['data-icon'] = isset($attrs['icon']) && $attrs['icon'] ? substr($attrs['icon'], 3, strlen($attrs['icon'])-1): '';
+  $text = '<div ' . _stability_shortcodes_shortcode_attributes($attrs) . '></div>';
+  return $text;
+}
+
+function stability_shortcodes_shortcode_circle_counter_settings($attrs, $text){
+  $form['icon'] = array(
+    '#title' => t('Icon'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/icons_autocomplete/font_awesome',
+    '#default_value' => isset($attrs['icon']) ? $attrs['icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['title'] = array(
+    '#title' => t('Title'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['percent'] = array(
+    '#title' => t('Percent'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['percent']) ? $attrs['percent'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['amount'] = array(
+    '#title' => t('Amount'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['amount']) ? $attrs['amount'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['width'] = array(
+    '#title' => t('Width'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['width']) ? $attrs['width'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['color'] = array(
+    '#title' => t('Color'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['color']) ? $attrs['color'] : '',
+    '#attributes' => array('class' => array('form-control colorpicker-enable')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}
+
+function stability_shortcodes_shortcode_icon ($attrs, $text){
+  $text = isset($attrs['icon']) ? '<i class="' . $attrs['icon'] . _stability_shortcodes_shortcode_attributes($attrs) . ' fa-lg"></i>' : '';
+  $text .= isset($attrs['title']) ? '<h5>' . $attrs['title'] . '</h5>' : '';
+  $text = isset($attrs['anchor']) ? '<a href="' . $attrs['anchor'] . '">' . $text . '</a>' : $text;
+  return $text;
+}
+
+function stability_shortcodes_shortcode_icon_settings ($attrs, $text) {
+  $form['icon'] = array(
+    '#title' => t('Icon'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'admin/ajax/nd_visualshortcodes/icons_autocomplete/font_awesome',
+    '#default_value' => isset($attrs['icon']) ? $attrs['icon'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+  );
+  $form['title'] = array(
+    '#title' => t('Title'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['title']) ? $attrs['title'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '</div><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  $form['anchor'] = array(
+    '#title' => t('Anchor'),
+    '#type' => 'textfield',
+    '#default_value' => isset($attrs['anchor']) ? $attrs['anchor'] : '',
+    '#attributes' => array('class' => array('form-control')),
+    '#prefix' => '<div class = "row"><div class = "col-sm-6">',
+    '#suffix' => '</div></div>',
+  );
+  return $form;
+}

@@ -1,0 +1,22 @@
+.qtip-link {
+  border-bottom: 1px dotted;
+  color: #000000;
+  cursor: default;
+}
+
+.qtip-tooltip {
+  display: none;
+  font-weight: bold;
+}
+
+tr.qtip-default-instance {
+  font-weight: bold;
+}
+
+form#qtip-configure-instance-form .corners-images {
+  float: right;
+}
+
+form#qtip-configure-instance-form .corners-images .credit {
+  text-align: center;
+}

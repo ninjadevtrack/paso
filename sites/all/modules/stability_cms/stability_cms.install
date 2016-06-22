@@ -1,0 +1,10 @@
+<?php
+
+
+function stability_cms_install() {
+  variable_set('site_frontpage', 'home');
+  variable_set('site_404', 'page-404');
+  $value = file_get_contents(drupal_get_path('module', 'stability_cms') . '/stability_layoutbuilder_import/stability_cms_layout_builder_settings.php');
+  db_update('variable')->fields(array('value' => $value))->condition('name', 'nikadevs_cms_layout_stability_sub')->execute();
+  db_update('variable')->fields(array('value' => $value))->condition('name', 'nikadevs_cms_layout_stability')->execute();
+}

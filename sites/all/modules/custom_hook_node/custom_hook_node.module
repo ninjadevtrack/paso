@@ -1,0 +1,67 @@
+<?php
+function custom_hook_node_node_presave($node) {
+	if($node->type == "form"){
+		$array = array();
+		$item_depart_1_arr = $node->field_departmento_s_;
+		foreach($item_depart_1_arr as $key => $item){
+			$total = count($item);
+			for($i=0;$i< ($total / 2); $i++){
+				$k = $i*2;
+				$term_tid_0 = $item[$k]['tid'];
+				$term_0 = taxonomy_term_load($term_tid_0);
+				$term_name_0 = $term_0->name;
+			
+				$term_tid_1 = $item[$k+1]['tid'];
+				$term_1 = taxonomy_term_load($term_tid_1);
+				$term_name_1 = $term_1->name;
+			
+				$value = $term_name_1 . ", " . $term_name_0 ." Colombia";
+				$array[] = $value;
+				
+			}
+			
+		}
+		
+		$item_depart_2_arr = $node->field_departmento_s_2;
+		foreach($item_depart_2_arr as $key => $item){
+			$total = count($item);
+			for($i=0;$i< ($total / 2); $i++){
+				$k = $i*2;
+				$term_tid_0 = $item[$k]['tid'];
+				$term_0 = taxonomy_term_load($term_tid_0);
+				$term_name_0 = $term_0->name;
+			
+				$term_tid_1 = $item[$k+1]['tid'];
+				$term_1 = taxonomy_term_load($term_tid_1);
+				$term_name_1 = $term_1->name;
+			
+				$value = $term_name_1 . ", " . $term_name_0 ." Colombia";
+				$array[] = $value;
+				
+			}
+		}
+		$node->field_direcci_n_hidden['und'] = array();
+		$node->field_geocode['und'] = array();
+		if(count($array) > 0){
+			foreach($array as $key => $value){
+				$node->field_direcci_n_hidden['und'][$key]['value'] = $value;
+				
+				//Rebuild Geofield
+				$addr = $value;
+				$point = geocoder('google',$addr);
+	
+				$addrPoint = array(
+					'lat' => $point->coords[1],
+       				 'lon' => $point->coords[0]
+        			);
+				$geoPoint = geofield_compute_values($addrPoint);
+				$node->field_geocode['und'][] = $geoPoint;
+			}
+		} else {
+			$node->field_geocode['und'] = array(array('value' => null));
+			$node->field_direcci_n_hidden['und'][0]['value'] = null;
+		}
+		
+		//print_r($node);die();
+	}
+}

@@ -1,0 +1,187 @@
+.style-switcher {
+  position: fixed;
+  top: 80px;
+  left: -200px;
+  z-index: 2000;
+  width: 200px;
+  border-radius: 0 0 6px;
+  background: #3d3d3d;
+}
+
+.style-switcher h3 {
+  margin: 0;
+  padding: 5px 0 5px 20px;
+  background: #494949;
+  color: #fff;
+  text-transform: none;
+  font-size: 16px;
+  font-family: 'Muli', sans-serif;
+  line-height: 30px;
+}
+  .style-switcher h3 a {
+    position: absolute;
+    top: 0;
+    right: -40px;
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 0 5px 5px 0;
+    background-color: #494949;
+    color: #FFF;
+    text-align: center;
+    text-decoration: none;
+    font-size: 24px;
+    line-height: 40px;
+  }
+  .style-switcher h3 a .fa {
+    color: #fff;
+    margin-right: 4px;
+  }
+.style-switcher-body {
+  padding: 20px;
+}
+  .style-switcher-body h4 {
+    font-family: 'Muli', sans-serif;
+    text-transform: none;
+    color: #fff;
+    margin-bottom: .5em;
+  }
+  .style-switcher-body ul {
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+.styles-switcher-colors {
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: -10px;
+  margin-right: -10px;
+}
+  .styles-switcher-colors li {
+    float: left;
+    margin: 0 10px 10px 0;
+  }
+    .styles-switcher-colors li a {
+      display: block;
+      width: 32px;
+      height: 32px;
+      background: #dc2a0b;
+      border: 1px solid transparent;
+    }
+    .styles-switcher-colors li a:hover {
+      border-color: #fff;
+    }
+
+    .styles-switcher-colors li a.color-blue {
+      background: #3498db;
+    }
+    .styles-switcher-colors li a.color-asbestos {
+      background: #7f8c8d;
+    }
+    .styles-switcher-colors li a.color-green {
+      background: #27ae60;
+    }
+    .styles-switcher-colors li a.color-orange {
+      background: #f39c12;
+    }
+    .styles-switcher-colors li a.color-silver {
+      background: #bdc3c7;
+    }
+    .styles-switcher-colors li a.color-violet {
+      background: #9b59b6;
+    }
+    .styles-switcher-colors li a.color-yellow {
+      background: #f1c40f;
+    }
+
+/* Layouts */
+.style-switcher-layout {
+  list-style: none;
+  padding: 0 0 10px 0;
+}
+  .style-switcher-layout li {
+    float: right;
+    width: 45%;
+    text-align: center;
+  }
+    .style-switcher-layout li:first-child {
+      float: left;
+    }
+    .style-switcher-layout li a {
+      display: block;
+      border: 2px solid rgba(255,255,255,.1);
+      padding: 5px 0;
+      color: #fff;
+    }
+    .style-switcher-layout li a:hover,
+    .style-switcher-layout li a.active {
+      text-decoration: none;
+      background: rgba(255,255,255,.1);
+    }
+
+/* Patterns */
+.style-switcher-patterns {
+  list-style: none;
+  padding: 0;
+  margin-right: -6px;
+}
+  .style-switcher-patterns li {
+    float: left;
+    margin: 0 6px 6px 0;
+  }
+    .style-switcher-patterns li a {
+      display: block;
+      width: 21px;
+      height: 21px;
+      background: #fafafa;
+      -webkit-transition: 0.2s;
+          transition: 0.2s;
+    }
+    .style-switcher-patterns li a:hover {
+      
+    }
+    .style-switcher-patterns li a.binding_dark {
+      background: url(../images/patterns/binding_dark.png);
+    }
+    .style-switcher-patterns li a.brickwall {
+      background: url(../images/patterns/brickwall.png);
+    }
+    .style-switcher-patterns li a.cream_pixels {
+      background: url(../images/patterns/cream_pixels.png);
+    }
+    .style-switcher-patterns li a.grey_wash_wall {
+      background: url(../images/patterns/grey_wash_wall.png);
+    }
+    .style-switcher-patterns li a.greyzz {
+      background: url(../images/patterns/greyzz.png);
+    }
+    .style-switcher-patterns li a.mooning {
+      background: url(../images/patterns/mooning.png);
+    }
+    .style-switcher-patterns li a.p5 {
+      background: url(../images/patterns/p5.png);
+    }
+    .style-switcher-patterns li a.retina_wood {
+      background: url(../images/patterns/retina_wood.png);
+    }
+    .style-switcher-patterns li a.shattered {
+      background: url(../images/patterns/shattered.png);
+    }
+    .style-switcher-patterns li a.sos {
+      background: url(../images/patterns/sos.png);
+    }
+    .style-switcher-patterns li a.squared_metal {
+      background: url(../images/patterns/squared_metal.png);
+    }
+    .style-switcher-patterns li a.subtle_grunge {
+      background: url(../images/patterns/subtle_grunge.png);
+    }
+body.wide {
+  background: #fff !important;
+}
+body.wide.bg1 {
+  background: #fff url(../images/bg1.jpg) 50% 0 no-repeat !important;
+  -webkit-background-size: contain;
+  background-size: contain;
+}

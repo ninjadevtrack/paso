@@ -1,0 +1,101 @@
+@charset "UTF-8";
+/* Insert your custom CSS styles */
+
+h2, .h2 {
+    font-size: 22px;}
+
+.header-main {position: relative;
+    background-color: #ffffff;
+    background: url("/sites/default/files/colombia-peace-sky.jpg") no-repeat center top;
+  -webkit-background-size: 100% 100%;
+  -moz-background-size: 100% 100%;
+  -o-background-size: 100% 100%;
+  background-size: 100% 100%;}
+  
+.header-top {background: #3781C5;}
+  
+footer.nd-region {
+    background: #0f425b;
+    color: #ffffff;
+    padding-bottom: 10px !important;
+	padding-top: 35px;}
+	
+.footer-copyright {
+    border-top: 1px solid #999;
+    background: #3781C5;
+    font-size: 11px;
+    padding: 20px 0;
+    color: #E2E2E2;
+	font-style: italic;
+	 }
+	
+footer .widget {
+    margin-bottom: 30px;
+	font-size: 14px;
+}
+
+div#block-3 {
+    color: #000000;
+}
+
+.contacts-widget .contacts-info-list > li > .fa {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+}
+
+.contacts-widget .contacts-info-list > li {min-height: 22px;}
+	
+.nd-region.homenopad {
+  padding-top: 5px;}
+     
+	 
+section.nd-region.section-siver {padding-top: 0px; padding-bottom: 0px;}
+
+.header .logo {
+    padding: 29px 0 10px 0;}
+	
+.nav-main {
+    background: none;
+   }
+   
+body {
+   
+    color: #363636;
+    font-family: 'Muli', sans-serif;
+    font-size: 15px;
+    line-height: 22px; }
+	
+section.nd-region.section-yellow {	
+	margin: 0 -100% 20px -100%;
+    padding: 35px 100% 25px 100%;
+    background: #f6b232;
+    overflow: hidden;}
+	
+.title-accent > h3 > span {font-size: 18px; font-family: 'Oswald', sans-serif;}
+
+.page-heading {
+    background: #0f425b;
+    border-top: 5px solid #d4d4d4;
+    border-bottom: 5px solid #d4d4d4;
+    position: relative;  
+}
+
+ul.team-social.list-unstyled {font-size: 14px;}
+
+.social-links > li > a {background: #0F425B; color: #ffffff;}
+
+
+@media (min-width: 992px) {
+  .nav-main {
+    background: none;
+  
+  }
+  
+  header.menu-pills .flexnav > li.active > a {
+    color: #2f2f2f;
+  
+  }
+  .flexnav > li:hover, .flexnav > li.active {
+    background: rgba(255, 255, 255, 0.15)
+  }}

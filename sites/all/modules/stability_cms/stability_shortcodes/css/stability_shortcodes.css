@@ -1,0 +1,33 @@
+#edit-color-btn-default + label {
+  background: #e4e4e4;
+}
+#edit-color-btn-primary + label,
+#edit-color-progress-red + label{
+  background: #dc2a0b;
+}
+#edit-color-progress-bar-info + label{
+  background: #49b9db;
+}
+#edit-color-progress-bar-success + label{
+  background: #4bc050;
+}
+#edit-color-progress-bar-danger + label{
+  background: #c9302c;
+}
+#edit-color-progress-bar-warning + label{
+  background: #fbaa2a;
+}
+
+#edit-color-bg-dark-gray + label{
+  background-color: #555; /* dark grey */
+}
+#edit-color-bg-light + label{
+  background-color: #f7f7f7; /* light */
+}
+#edit-color-section-primary + label{
+  background: #dc2a0b; /*red */
+}
+#edit-color-bg-gray + label{
+  background: #ccc; /* light gray */
+  background: rgba(30,30,30,.3);
+}

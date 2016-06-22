@@ -1,0 +1,13 @@
+name = Custom Hook Node
+description = All hook and custom for this website
+package = Others
+core = 7.x
+
+
+
+; Information added by Drupal.org packaging script on 2016-01-04
+version = "7.x-1.0"
+core = "7.x"
+project = "custom_hook_node"
+datestamp = "1432026177"
+
