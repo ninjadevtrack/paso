@@ -69,6 +69,12 @@ function qtip_field_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
     ),
     '#weight' => 20,
   );
+  $form['instance']['qtip']['qtip_label'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Add qTip to field label.'),
+    '#description' => t('If checked qTip will be shown after the label in the rendered field.'),
+    '#default_value' => isset($settings['qtip_label']) ? $settings['qtip_label'] : 0,
+  );
 
   $form['instance']['qtip']['instance'] = qtip_fetch_instances_field($settings['instance'], array('weight' => 30));
   $form['instance']['qtip']['instance'] += array(
@@ -143,5 +149,35 @@ function qtip_field_field_widget_form_alter(&$element, &$form_state, $context) {
     }
 
     $local_element['#suffix'] = theme('qtip_form', array('instance' => $context['instance']['qtip']['instance'], 'title' => $tooltip_title, 'tooltip' => $tooltip_text));
+  }
+}
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function qtip_field_preprocess_field(&$variables) {
+  $settings = field_info_instance($variables['element']['#entity_type'], $variables['element']['#field_name'], $variables['element']['#bundle']);
+  if ($variables['label_hidden'] == FALSE && isset($settings['qtip']) && $settings['qtip']['qtip_label'] === 1 && $settings['qtip']['text'] != 'none') {
+    $qtip_help_image = theme('image', array(
+      'path' => base_path() . 'misc/help.png',
+    ));
+    $tooltip_text = '';
+    switch ($settings['qtip']['text']) {
+      case 'description':
+        if (isset($settings['description'])) {
+          $tooltip_text = $settings['description'];
+        }
+        break;
+
+      case 'custom':
+        $tooltip_text = isset($settings['qtip']['custom_text']) ? $settings['qtip']['custom_text'] : '';
+        break;
+    }
+    $qtip = theme('qtip', array(
+      'content' => $qtip_help_image,
+      'instance' => $settings['qtip']['instance'],
+      'tooltip' => $tooltip_text,
+    ));
+    $variables['label'] = $variables['label'] . $qtip;
   }
 }

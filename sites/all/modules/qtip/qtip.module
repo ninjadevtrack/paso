@@ -252,10 +252,11 @@ function qtip_theme() {
   return array(
     'qtip' => array(
       'variables' => array(
-        'content'  => NULL,
-        'title'    => NULL,
-        'tooltip'  => NULL,
-        'instance' => NULL,
+        'content'    => NULL,
+        'title'      => NULL,
+        'tooltip'    => NULL,
+        'instance'   => NULL,
+        'attributes' => NULL,
       ),
       'file' => 'includes/qtip.theme.inc',
     ),

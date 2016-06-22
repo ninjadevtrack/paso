@@ -1,21 +1,11 @@
 <?php
 
 /**
- * Implements hook_init().
- */
-function qtip_filter_init() {
-  // Only load qtip.admin.js file if currently viewing qTip settings page
-  if (request_uri() == base_path() . 'admin/config/user-interface/qtip/settings/filter') {
-    drupal_add_js(drupal_get_path('module', 'qtip_filter') . '/js/qtip_filter.admin.js');
-  }
-}
-
-/**
  * Implements hook_filter_info().
  */
 function qtip_filter_filter_info() {
   $filters['qtip'] = array(
-    'title'             => t('qTip: Add stylish jQuery tooltips to text'),
+    'title'             => t('qTip tooltips'),
     'process callback'  => '_qtip_filter_process',
     'settings callback' => '_qtip_filter_settings',
     'tips callback'     => '_qtip_filter_tips',

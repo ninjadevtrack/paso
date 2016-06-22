@@ -244,7 +244,7 @@ function qtip_views_theme() {
  */
 function theme_qtip_views_label_tooltip(&$variables) {
   $element = theme('image', array(
-    'path'       => drupal_get_path('module', 'qtip_views') . '/images/help.png',
+    'path'       => base_path() . 'misc/help.png',
     'attributes' => array(
       'class' => array(
         'qtip-views-' . $variables['view']->name . '-' . $variables['view']->current_display,

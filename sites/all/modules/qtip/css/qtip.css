@@ -1,12 +1,11 @@
 .qtip-link {
   border-bottom: 1px dotted;
-  color: #000000;
+  color: #00F;
   cursor: default;
 }
 
 .qtip-tooltip {
   display: none;
-  font-weight: bold;
 }
 
 tr.qtip-default-instance {
@@ -18,5 +17,6 @@ form#qtip-configure-instance-form .corners-images {
 }
 
 form#qtip-configure-instance-form .corners-images .credit {
+  font-size: 10px;
   text-align: center;
 }
