@@ -5,14 +5,14 @@
  * Functions related to the WYSIWYG editor and the media input filter.
  */
 
-define('MEDIA_WYSIWYG_TOKEN_REGEX', '/\[\[.*?\]\]/s');
+define('MEDIA_WYSIWYG_TOKEN_REGEX', '/\[\[\{"fid".*?\]\]/s');
 
 /**
  * Filter callback for media markup filter.
  *
  * @TODO check for security probably pass text through filter_xss
  */
-function media_wysiwyg_filter($text, $filter, $format, $langcode, $cache, $cache_id) {
+function media_wysiwyg_filter($text, $filter = NULL, $format = NULL, $langcode = NULL, $cache = NULL, $cache_id = NULL) {
   $replacements = array();
   $patterns = array();
   $rendered_text = $text;
@@ -307,7 +307,7 @@ function _media_wysiwyg_generate_tagMap($text) {
   // between function calls. Since media_process_form is multiple times
   // with same form, this function is also called multiple times.
   static $tagmap = array();
-  preg_match_all("/\[\[.*?\]\]/s", $text, $matches, PREG_SET_ORDER);
+  preg_match_all(MEDIA_WYSIWYG_TOKEN_REGEX, $text, $matches, PREG_SET_ORDER);
   foreach ($matches as $match) {
     // We see if tagContent is already in $tagMap, if not we add it
     // to $tagmap.  If we return an empty array, we break embeddings of the same
