@@ -32,21 +32,8 @@
       </div>
     </figure>
     <div class="project-desc">
-      <div class="meta">
-        <?php /*?><?php if(isset($fields['comment_count'])): ?>
-          <a href="<?php print isset($fields['path']) ? $fields['path']->content : '#'; ?>" class="comments">
-            <i class="fa fa-comments"></i> <?php print $fields['comment_count']->content; ?>
-          </a>
-        <?php endif; ?><?php */?>
-        <?php /*?><?php if(isset($fields['created'])): ?>
-          <span class="date"><?php print $fields['created']->content; ?></span>
-        <?php endif; ?><?php */?>
-      </div>
       <h4 class="title"><?php print $fields['title']->content; ?></h4>
-		<p> 
-   
-  <?php print $fields['body']->content;?>
-   </p>
     </div>
   </div>
+  <div class="project-sum"><?php print $fields['body']->content;?></div>
 </div>

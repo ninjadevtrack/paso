@@ -108,3 +108,25 @@ ul.team-social.list-unstyled {font-size: 14px;}
 .people-email a {
   color: #D79D2F;
 }
+.section-latest-news {
+  padding-top: 22px;
+  padding-bottom: 43px;
+}
+.section-latest-news .project-item-inner {
+  position: relative;
+}
+.section-latest-news .project-desc {
+  bottom: 7px;
+  left: 7px;
+  right: 7px;
+  z-index: 3;
+  padding: 10px 12px;
+  background: rgba(22, 54, 71, 0.73) !important;
+  position: absolute;
+}
+.section-latest-news .project-desc h4 a {
+  color: #ffffff;
+}
+.section-latest-news .project-sum {
+  padding: 20px 10px 0 10px;
+}
