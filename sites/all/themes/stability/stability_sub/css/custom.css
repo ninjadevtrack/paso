@@ -106,7 +106,8 @@ ul.team-social.list-unstyled {font-size: 14px;}
   }
   .flexnav > li:hover, .flexnav > li.active {
     background: rgba(255, 255, 255, 0.15)
-  }}
+  }
+}
 .people-email a {
   color: #D79D2F;
 }
@@ -134,4 +135,15 @@ ul.team-social.list-unstyled {font-size: 14px;}
 }
 .view-display-id-page_2 .project-item .dlink {
   width: 100%;
+}
+@media (max-width: 525px) {
+  .header .logo img {
+    width: 300px !important;
+  }
+}
+.navbar-toggle {
+  background: #0d4b66;
+}
+.navbar-toggle:hover, .navbar-toggle:active, .navbar-toggle:focus {
+  background: #13719a;
 }
