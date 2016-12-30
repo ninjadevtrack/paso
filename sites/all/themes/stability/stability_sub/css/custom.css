@@ -18,10 +18,12 @@ footer.nd-region {
     background: #0f425b;
     color: #ffffff;
     padding-bottom: 10px !important;
-	padding-top: 35px;}
+	padding-top: 35px;
+    border-top: 2px solid #fbb516;
+}
 
 .footer-copyright {
-    border-top: 1px solid #999;
+    border-top: none;
     background: #3781C5;
     font-size: 11px;
     padding: 20px 0;
