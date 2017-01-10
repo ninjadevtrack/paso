@@ -170,6 +170,10 @@ ul.team-social.list-unstyled {font-size: 14px;}
     padding-bottom: 14px !important;
     font-size: 13px;
 }
+.social-links > li > a:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #2f2f2f;
+}
 
 .footer-copyright a{
     color: #ffffff;
