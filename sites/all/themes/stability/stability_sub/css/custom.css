@@ -15,7 +15,7 @@ h2, .h2 {
 .header-top {background: #3781C5;}
 
 footer.nd-region {
-  background: #0f425b;
+  background: #2e7ec7;
   color: #ffffff;
   padding-bottom: 10px !important;
   padding-top: 35px;
@@ -24,7 +24,7 @@ footer.nd-region {
 
 .footer-copyright {
     border-top: none;
-    background: #3781C5;
+    background: #0f3a57;
     font-size: 11px;
     padding: 20px 0;
     color: #E2E2E2;
@@ -165,7 +165,7 @@ ul.team-social.list-unstyled {font-size: 14px;}
     }
 }
 .social-links-footer {
-    background: #0f425b;
+    background: #2e7ec7;
     color: #ffffff;
     padding-bottom: 14px !important;
     font-size: 13px;
@@ -177,4 +177,18 @@ ul.team-social.list-unstyled {font-size: 14px;}
 .footer-copyright a:hover {
     color: #c29d3a;
     text-decoration: none;
+}
+footer h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  line-height: 1.2em;
+  margin: 0 0 1em 0;
+  color: #23527c;
+  text-transform: uppercase;
+}
+.col-sm-6.col-md-4.moveleft {
+    text-align: left;
+    max-width: 426px;
+    color: #ffffff;
+    padding-left: 0px;
 }

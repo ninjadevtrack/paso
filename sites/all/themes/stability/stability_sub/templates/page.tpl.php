@@ -149,7 +149,7 @@ $page['content']['#prefix'] = $messages . $tabs;
     <div class="footer-copyright">
       <div class="container">
         <div class="row">
-          <div class="col-sm-6 col-md-4">
+          <div class="col-sm-6 col-md-4 moveleft">
             <div><img style="float: left; padding-left: 5px; margin-right: 12px;" src="/sites/default/files/peace-organization.jpg" alt="Peace Foundation"></div>
            <div style="padding-top: 28px; line-height: 15px;"> <?php if(theme_get_setting('copyright')) {
               print theme_get_setting('copyright');
