@@ -28,8 +28,8 @@ footer.nd-region {
     font-size: 11px;
     padding: 20px 0;
     color: #E2E2E2;
-	font-style: italic;
-	 }
+    font-style: italic;
+}
 
 h4,  .h4 {
     font-family: 'Oswald', sans-serif;
@@ -146,4 +146,30 @@ ul.team-social.list-unstyled {font-size: 14px;}
 }
 .navbar-toggle:hover, .navbar-toggle:active, .navbar-toggle:focus {
   background: #13719a;
+}
+
+.social-links-footer .social-links-wrapper .social-links {
+    display: inline-block;
+    vertical-align: middle;
+}
+.social-links-footer .social-links-wrapper {
+    padding-top: 10px;
+}
+@media (min-width: 768px) {
+    .social-links-footer .social-links-wrapper {
+        padding-top: 0;
+    }
+}
+.social-links-footer {
+    background: #0f425b;
+    color: #ffffff;
+    padding-bottom: 14px !important;
+}
+
+.footer-copyright a{
+    color: #ffffff;
+}
+.footer-copyright a:hover {
+    color: #c29d3a;
+    text-decoration: none;
 }

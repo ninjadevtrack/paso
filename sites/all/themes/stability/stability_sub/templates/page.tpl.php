@@ -70,7 +70,7 @@ $page['content']['#prefix'] = $messages . $tabs;
 ?>
 
 <div class="site-wrapper">
-  
+
   <?php
     $header_version = arg(0) == 'home' && arg(1) == 'header' ? arg(2) : theme_get_setting('header');
     $file_name = "headers/header-{$header_version}.tpl.php";
@@ -81,7 +81,7 @@ $page['content']['#prefix'] = $messages . $tabs;
 
   <div class="main" role="main">
 
-    <?php 
+    <?php
       if(!$is_front && strpos(request_uri(), 'home') === FALSE) {
         $sub_header_version = arg(2) == 'sub-header' ? arg(3) : theme_get_setting('sub_header');
         $file_name = 'sub-headers/sub-header-' . ($sub_header_version ? $sub_header_version : 1) . '.tpl.php';
@@ -93,13 +93,13 @@ $page['content']['#prefix'] = $messages . $tabs;
       if(function_exists('nikadevs_cms_page_layout') && variable_get('nikadevs_cms_layout_' . variable_get('theme_default', 'stability'), array()) != array()):
         print nikadevs_cms_page_layout(array('page' => $page, 'messages' => $messages, 'tabs' => $tabs));
       else: ?>
-      <?php print render($page['top']); ?>    
-      
+      <?php print render($page['top']); ?>
+
       <section class="page-content">
         <div class="container contextual-links-region">
 
-        <?php print render($page['content_top']); ?>  
-        
+        <?php print render($page['content_top']); ?>
+
         <div class = "row">
           <div class = "col-md-12">
             <?php print render($page['content']); ?>
@@ -109,27 +109,16 @@ $page['content']['#prefix'] = $messages . $tabs;
           </div>
         </div>
 
-        <?php print render($page['bottom']); ?>  
+        <?php print render($page['bottom']); ?>
         </div>
       </section>
-      
+
       <?php print render($page['footer']); ?>
     <?php endif;?>
-
-    <div class="footer-copyright">
+    <div class="social-links-footer">
       <div class="container">
-        <div class="row">
-          <div class="col-sm-6 col-md-4">
-         <div style="float: left; padding-right: 10px;"><a href="http://oneearthfuture.org"><img src="/sites/default/files/one-earth-future-logo.png" alt="One Earth Future"></a></div>
-           <div style="padding-top: 8px; line-height: 15px;"> <?php if(theme_get_setting('copyright')) {
-              print theme_get_setting('copyright');
-            }
-            else {
-              print t('Copyright') . ' &copy; '. date('Y'); ?>  <a href="#"><?php print strtoupper(variable_get('site_name', 'STABILITY')); ?></a> &nbsp;| &nbsp; <?php print t('All Rights Reserved');
-            }; ?>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-8">
+        <div id="Social-Links-Footer" class="row">
+          <div class="col-sm-6 col-md-3" id="stability_cms-social_links_footer">
             <div class="social-links-wrapper">
               <span class="social-links-txt"><?php print theme_get_setting('connect_us'); ?></span>
               <ul class="social-links social-links__dark">
@@ -138,10 +127,10 @@ $page['content']['#prefix'] = $messages . $tabs;
                 <?php endif; ?>
                 <?php if (theme_get_setting('social_links_twitter_enabled')): ?>
                   <li><a href="//<?php print theme_get_setting('social_links_twitter_link'); ?>"><i class="fa fa-twitter"></i></a></li>
-                <?php endif; ?>          
+                <?php endif; ?>
                 <?php if (theme_get_setting('social_links_instagram_enabled')): ?>
                   <li><a href="//<?php print theme_get_setting('social_links_instagram_link'); ?>"><i class="fa fa-instagram"></i></a></li>
-                <?php endif; ?>          
+                <?php endif; ?>
                 <?php if (theme_get_setting('social_links_linkedin_enabled')): ?>
                   <li><a href="//<?php print theme_get_setting('social_links_linkedin_link'); ?>"><i class="fa fa-linkedin"></i></a></li>
                 <?php endif; ?>
@@ -152,6 +141,22 @@ $page['content']['#prefix'] = $messages . $tabs;
                   <li><a href="//<?php print theme_get_setting('social_links_rss_link'); ?>" ><i class="fa fa-rss"></i></a></li>
                 <?php endif; ?>
               </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-6 col-md-4">
+            <div><img style="float: left; padding-left: 5px; margin-right: 12px;" src="/sites/default/files/peace-organization.jpg" alt="Peace Foundation"></div>
+           <div style="padding-top: 28px; line-height: 15px;"> <?php if(theme_get_setting('copyright')) {
+              print theme_get_setting('copyright');
+            }
+            else {
+              print t('Copyright') . ' &copy; '. date('Y'); ?>  <a href="#"><?php print strtoupper(variable_get('site_name', 'STABILITY')); ?></a> &nbsp;| &nbsp; <?php print t('All Rights Reserved');
+            }; ?>
             </div>
           </div>
         </div>
