@@ -135,7 +135,7 @@ ul.team-social.list-unstyled {font-size: 14px;}
   color: #ffffff;
 }
 .section-latest-news .project-sum {
-  padding: 20px 10px 0 10px;
+  padding: 0px 10px 0 10px;
 }
 .view-display-id-page_2 .project-item .dlink {
   width: 100%;
@@ -195,4 +195,10 @@ footer h3 {
     max-width: 426px;
     color: #ffffff;
     padding-left: 0px;
+}
+.section-latest-news .project-date {
+  font-size: 12px;
+  color: #b4b8be;
+  font-style: italic;
+  padding: 20px 10px 0 10px;
 }
