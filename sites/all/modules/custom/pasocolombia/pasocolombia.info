@@ -1,0 +1,10 @@
+name = Pasocolombia Customize
+description = "Provides all customize of Pasocolombia Project."
+package = OEF
+core = 7.x
+dependencies[] = system (>7.10)
+
+; Information added by Drupal.org packaging script on 2014-12-19
+version = "7.x-1.0"
+core = "7.x"
+project = "oef"

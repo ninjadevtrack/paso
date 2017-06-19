@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * Implements hook_permission().
+ */
+function pasocolombia_permission() {
+  return array(
+    'pasocolombia custom' => array(
+      'title' => t('Access pasocolombia custom module'),
+      'description' => t('No display'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function pasocolombia_menu() {
+
+  $items['admin/pasocolombia'] = array(
+    'page callback' => 'pasocolombia_page',
+    'access arguments' => array('pasocolombia custom'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function pasocolombia_page() {
+  $res = array();
+  $query = db_select('node', 'n');
+  $query->condition('n.type', 'blog', '=');
+  $query->fields('n', array('nid'));
+  $res = $query->execute();
+  while ($rec = $res->fetchAssoc()) {
+    $blog = node_load($rec['nid']);
+    print $blog->nid . '<br />';
+    node_save($blog);
+  }
+  return 'Done!';
+}
+
+function pasocolombia_node_presave($node) {
+  if ($node->nid && $node->type='blog') {
+    switch ($node->field_news_type['und'][0]['value']) {
+      case 'News':
+        $type = 'news';
+        break;
+      case 'Events':
+        $type = 'events';
+        break;
+      case 'Press Releases':
+         $type = 'news';
+        break;
+      case 'In News':
+         $type = 'news';
+        break;
+      case 'Blog':
+         $type = 'blog';
+        break;
+      case 'Coup Blog':
+         $type = 'news';
+        break;
+      default:
+        $type = 'blog';
+        break;
+    }
+
+    $node->field_url_news_type‎['und'][0]['value'] = $type;
+  }
+}
