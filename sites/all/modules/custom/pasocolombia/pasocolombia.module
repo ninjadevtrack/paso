@@ -72,8 +72,6 @@ function pasocolombia_node_presave($node) {
           break;
       }
     }
-
-
-    $node->field_url_news_type‎['und'][0]['value'] = $type;
+    $node->field_url_news_type['und'][0]['value'] = $type;
   }
 }
