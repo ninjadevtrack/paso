@@ -39,7 +39,7 @@ function pasocolombia_page() {
   return 'Done!';
 }
 
-function pasocolombia_node_presave($node) {
+function pasocolombia_node_presave($node) { print_r($node);die();
   if ($node->nid && $node->type='blog') {
     switch ($node->field_news_type['und'][0]['value']) {
       case 'News':
