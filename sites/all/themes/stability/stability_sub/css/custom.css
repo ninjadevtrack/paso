@@ -205,3 +205,18 @@ footer h3 {
 	font-style: italic;
 	padding: 20px 10px 0 10px;
 }
+.view-id-resources ul {
+  padding 0;
+}
+.view-id-resources li.page-item{
+  float: left;
+  margin-right: 30px;
+  width: 350px;
+}
+.view-id-resources .project-item .dlink {
+  width: 100%;
+}
+.view-id-resources .project-desc {
+  padding: 15px 20px;
+  min-height: 75px;
+}
