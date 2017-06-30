@@ -32,7 +32,9 @@
       </div>
     </figure>
     <div class="project-desc">
+      <div class="project-date"><?php print $fields['field_date']->content; ?></div>
       <h4 class="title"><?php print $fields['title']->content; ?></h4>
+      <div class="project-body"><?php print $fields['body']->content; ?></div>
     </div>
   </div>
 </div>

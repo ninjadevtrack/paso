@@ -212,6 +212,7 @@ footer h3 {
   float: left;
   margin-right: 30px;
   width: 350px;
+  list-style: none;
 }
 .view-id-resources .project-item .dlink {
   width: 100%;
@@ -219,4 +220,13 @@ footer h3 {
 .view-id-resources .project-desc {
   padding: 15px 20px;
   min-height: 75px;
+  text-align: left;
+}
+.view-id-resources .project-item .project-item-inner {
+  background: none;
+}
+.view-id-resources .project-date {
+  font-style: italic;
+  font-size: 12px;
+  margin-bottom: 5px;
 }
