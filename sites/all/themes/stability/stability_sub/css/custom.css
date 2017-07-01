@@ -230,3 +230,9 @@ footer h3 {
   font-size: 12px;
   margin-bottom: 5px;
 }
+#Content #sidebar {
+  z-index: 9;
+}
+#Content #content {
+  z-index: 10;
+}
