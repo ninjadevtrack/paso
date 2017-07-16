@@ -236,3 +236,12 @@ footer h3 {
 #Content #content {
   z-index: 10;
 }
+.widget-tag-cloud .tagcloud a {
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1px solid #cecece;
+    border-radius: 4px;
+    margin: 0 3px 6px 0;
+    -webkit-transition: 0.2s;
+    transition: 0.2s;
+}
