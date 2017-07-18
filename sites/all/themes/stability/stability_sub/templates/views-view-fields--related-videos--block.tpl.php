@@ -31,5 +31,8 @@
         <a href="<?php print isset($fields['path']) ? $fields['path']->content : '#'; ?>" class="dlink"><i class="fa fa-link"></i></a>
       </div>
     </figure>
+    <div class="project-desc">
+      <h4 class="title"><?php print $fields['title']->content; ?></h4>
+    </div>
   </div>
 </div>
