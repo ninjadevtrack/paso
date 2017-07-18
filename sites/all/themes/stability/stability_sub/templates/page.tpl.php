@@ -120,7 +120,7 @@ $page['content']['#prefix'] = $messages . $tabs;
         <div id="Social-Links-Footer" class="row">
           <div class="col-sm-6 col-md-3" id="stability_cms-social_links_footer">
             <div class="social-links-wrapper">
-              <span class="social-links-txt"><?php print theme_get_setting('connect_us'); ?></span>
+              <span class="social-links-txt"><?php print t(theme_get_setting('connect_us')); ?></span>
               <ul class="social-links social-links__dark">
                 <?php if (theme_get_setting('social_links_facebook_enabled')): ?>
                   <li><a href="//<?php print theme_get_setting('social_links_facebook_link'); ?>" ><i class="fa fa-facebook"></i></a></li>
