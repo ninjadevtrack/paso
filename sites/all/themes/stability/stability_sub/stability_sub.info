@@ -59,7 +59,7 @@ settings[gmap_lng] = -74.005136
 settings[gmap_zoom] = 17
 settings[maptypeid] = ROADMAP
 
-settings[skin] = red 
+settings[skin] = red
 settings[layout] = wide
 settings[pattern] = brickwall
 

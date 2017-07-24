@@ -252,3 +252,6 @@ footer h3 {
   color: #000000;
   text-decoration: none;
 }
+.translate-links {
+  float: left;
+}
