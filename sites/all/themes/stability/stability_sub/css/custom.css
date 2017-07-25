@@ -255,3 +255,6 @@ footer h3 {
 .translate-links {
   float: left;
 }
+.resources-content img {
+  margin: 0 40px 20px 0;
+}
