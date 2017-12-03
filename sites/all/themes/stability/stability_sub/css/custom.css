@@ -101,6 +101,49 @@ footer .contacts-widget .contacts-info-list > li a:hover
 {color: #0f3a57;}
 
 
+.tp-dottedoverlay.filled {
+    background: #000;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    height: 66%;
+    top: 17%;
+}
+
+.text-black-shadow a, .text-black-shadow div, .md-object.text-black-shadow {
+    text-shadow: 4px 4px 4px rgba(0,0,0,0.9);
+    -ms-filter: "progid:DXImageTransform.Microsoft.dropshadow(OffX=4,OffY=4,Color=#80000000,Positive=true)";
+    zoom: 1;
+    filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=4,OffY=4,Color=#80000000,Positive=true);
+	line-height: 37px;
+}
+
+.tabs .nav-tabs > li.active > a {
+    color: #ffffff;
+    border-left-color: #dcdcdc;
+    border-right-color: #dcdcdc;
+    background: #10425a;
+	font-weight: bold;
+}
+
+.tabs .nav-tabs > li > a {
+    background: #3780c5;
+    margin-right: 2px;
+    border-left: 1px solid #f7f7f7;
+    border-right: 1px solid #f7f7f7;
+    border-bottom: none !important;
+    border-radius: 0;
+    padding: 12px 20px;
+    color: #ffffff;
+    position: relative;
+	font-weight: bold;
+}
+
+.tabs .nav-tabs > li {
+    margin-bottom: 0;
+    width: 25%;
+}
+
+
 @media (min-width: 992px) {
   .nav-main {
     background: none;
@@ -147,6 +190,10 @@ footer .contacts-widget .contacts-info-list > li a:hover
   .header .logo img {
     width: 300px !important;
   }
+	
+.md-object.text-black-shadow {
+    
+    line-height: 16px;
 }
 .navbar-toggle {
   background: #0d4b66;
@@ -161,6 +208,10 @@ footer .contacts-widget .contacts-info-list > li a:hover
 }
 .social-links-footer .social-links-wrapper {
     padding-top: 10px;
+	
+	
+}
+
 }
 @media (min-width: 768px) {
     .social-links-footer .social-links-wrapper {
@@ -205,27 +256,33 @@ footer h3 {
 	font-style: italic;
 	padding: 20px 10px 0 10px;
 }
-.view-id-resources ul {
+.view-id-resources ul,
+.view-id-proyectos ul {
   padding: 0;
 }
-.view-id-resources li.page-item{
+.view-id-resources li.page-item,
+.view-id-proyectos li.page-item {
   float: left;
   margin-right: 30px;
   width: 350px;
   list-style: none;
 }
-.view-id-resources .project-item .dlink {
+.view-id-resources .project-item .dlink,
+.view-id-proyectos .project-item .dlink {
   width: 100%;
 }
-.view-id-resources .project-desc {
+.view-id-resources .project-desc,
+.view-id-proyectos .project-desc {
   padding: 15px 20px;
   min-height: 75px;
   text-align: left;
 }
-.view-id-resources .project-item .project-item-inner {
+.view-id-resources .project-item .project-item-inner,
+.view-id-proyectos .project-item .project-item-inner {
   background: none;
 }
-.view-id-resources .project-date {
+.view-id-resources .project-date,
+.view-id-proyectos .project-date {
   font-style: italic;
   font-size: 12px;
   margin-bottom: 5px;
