@@ -14,7 +14,7 @@
           <?php foreach($layout['regions'] as $region_key => $region):?>
 
             <?php if($id == $region['row_id'] && !empty($region['content'])):?>
-              <?php if($region['settings']['tag']): ?>
+              <?php if(isset($region['settings']['tag']) && $region['settings']['tag']): ?>
                 <<?php print $region['settings']['tag']; ?> <?php print drupal_attributes($region['attributes']); ?>>
               <?php endif; ?>
                 
@@ -22,7 +22,7 @@
                 <?php print $region['content']; ?>
                 <?php print isset($region['settings']['suffix']) ? $region['settings']['suffix'] : ''; ?>
 
-              <?php if($region['settings']['tag']): ?>
+              <?php if(isset($region['settings']['tag']) && $region['settings']['tag']): ?>
                 </<?php print $region['settings']['tag']; ?>>
               <?php endif; ?>
             <?php endif; ?>

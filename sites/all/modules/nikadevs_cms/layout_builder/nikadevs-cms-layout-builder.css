@@ -251,23 +251,6 @@
   margin-bottom: 10px;
 }
 
-
-#layout-settings-form {
-    width: 100%!important;
-}
-
-div#col-settings {
-    width: 100%!important;
-}
-
-div#row-settings {
-    width: 100%!important;
-}
-
-div#layout-add {
-    width: 100%!important;
-}
-
 /* Background Row */
 a.button{
   cursor: pointer;

@@ -50,7 +50,16 @@ function nd_visualshortcodes_menu() {
     'access arguments' => array('use nd visualshortcodes'),
     'type' => MENU_CALLBACK,
   );
-
+  $items['ajax/nd_visualshortcodes/shortcodes_save'] = array(
+    'page callback' => 'nd_visualshortcodes_ajax_shortcodes_save',
+    'access arguments' => array('use nd visualshortcodes'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['ajax/nd_visualshortcodes/ajax_backend_delete_saved'] = array(
+    'page callback' => 'nd_visualshortcodes_ajax_shortcodes_delete_saved',
+    'access arguments' => array('use nd visualshortcodes'),
+    'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -70,6 +79,41 @@ function nd_visualshortcodes_permission() {
   return $arr;
 }
 
+/**
+ * Implementation of hook_shortcode_info() .
+ * Using the same formatting as hook_filter_info()`
+ */
+function nd_visualshortcodes_shortcode_info() {
+  $shortcodes['a_nd_saved'] = array(
+    'title' => t('Saved Shortcodes'),
+    'process callback' => 'nd_visualshortcodes_shortcode_saved',
+    'process backend callback' => 'nd_visualshortcodes_backend_nochilds',
+    'process settings callback' => 'nd_visualshortcodes_shortcode_saved_settings',
+    'icon' => 'fa fa-save',
+    'preview' => FALSE,
+  );
+  return $shortcodes;
+}
+
+function nd_visualshortcodes_shortcode_saved($attrs, $text) {
+  $code = db_select('nd_visualshortcodes_saved', 'n')->fields('n', array('code'))->condition('id', $attrs['saved'])->execute()->fetchField();
+  return $code;
+}
+
+function nd_visualshortcodes_shortcode_saved_settings($attrs, $text) {
+  $saved = db_select('nd_visualshortcodes_saved', 'n')->fields('n', array('id', 'name'))->orderBy('name')->execute()->fetchAllKeyed(0, 1);
+  asort($saved);
+  $form['saved'] = array(
+    '#title' => t('Saved Shortcodes'),
+    '#type' => 'select',
+    '#options' => $saved,
+    '#default_value' => isset($attrs['saved']) ? $attrs['saved'] : '',
+    '#attributes' => array('class' => array('form-control'))
+  );
+  $form['delete']['#markup'] = '<a href = "#" class = "delete-saved-shortcode btn btn-warning">' . t('Delete selected') . '</a>';
+  return $form;
+}
+
 function nd_visualshortcodes_admin_main($form, &$form_state) {
   $settings = variable_get('nd_visualshortcodes', array());
   $form['nd_visualshortcodes'] = array(
@@ -84,11 +128,6 @@ function nd_visualshortcodes_admin_main($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Confirm to delete shortcode'),
     '#default_value' => isset($settings['confirm_delete']) ? $settings['confirm_delete'] : 0
-  );
-  $form['nd_visualshortcodes']['live_preview'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Live Preview during editing'),
-    '#default_value' => isset($settings['live_preview']) ? $settings['live_preview'] : 0
   );
   $formats = array();
   foreach(filter_formats() as $format) {
@@ -300,7 +339,6 @@ function nd_visualshortcodes_ajax_backend_layout() {
   if(!isset($_POST['code'])) {
     drupal_exit();
   }
-  //print '<pre>';  print_r($_POST);  print '</pre>';
   $shortcodes = nd_visualshortcodes_process_shortcodes($_POST['code'], $_POST['format']);
   $settings = variable_get('nd_visualshortcodes', array());
   $live_preview = isset($settings['live_preview']) && $settings['live_preview'] ? ' nd-live-preview' : '';
@@ -311,8 +349,7 @@ function nd_visualshortcodes_ajax_backend_layout() {
 
 function nd_visualshortcodes_ajax_backend_shortcode_preview() {
   $settings = variable_get('nd_visualshortcodes', array());
-  $live_preview = isset($settings['live_preview']) && $settings['live_preview'] && !isset($shortcodes[$el]['live preview']) ? TRUE : FALSE;
-  if(!isset($_POST['shortcode']) || !$live_preview) {
+  if(!isset($_POST['shortcode'])) {
     drupal_exit();
   }
   $el = $_POST['shortcode'];
@@ -329,8 +366,8 @@ function nd_visualshortcodes_ajax_backend_shortcode_preview() {
       $text = $value;
     }
   }
-  $shortcodes = shortcode_list_all();
-  $preview = '<div class = "nd_backend_preview">' . $shortcodes[$el]['process callback']($attrs, $text) . '</div>';
+  $preview = nd_visualshortcodes_preview($el, $attrs, $text);
+  $preview = $el == 'a_nd_saved' ? $preview : '<div class = "nd_backend_preview">' . $preview . '</div>';
   print $preview;
   drupal_exit();
 }
@@ -396,7 +433,7 @@ function nd_visualshortcodes_ajax_backend_shortcode_form($form, &$form_state) {
   );
   $form['classes_animation'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Classes, ID & Animation'),
+    '#title' => t('Classes, ID & Other'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#group' => 'additional_settings',
@@ -541,6 +578,18 @@ function nd_visualshortcodes_ajax_backend_shortcode_form($form, &$form_state) {
     '#default_value' => isset($attrs['extra_style']) ? $attrs['extra_style'] : '',
     '#attributes' => array('class' => array('form-control')),
   );
+  $fonts = variable_get('nd_visualshortcodes_fonts', array());
+  if (!empty($fonts)) {
+    $form['classes_animation']['font'] = array(
+      '#type' => 'select',
+      '#title' => t('Font'),
+      '#options' => $fonts,
+      '#default_value' => isset($attrs['font']) ? $attrs['font'] : '',
+      '#prefix' => '<div class = "row col-settings"><div class = "col-xs-6 centered">',
+      '#suffix' => '</div>',
+      '#attributes' => array('class' => array('form-control'))
+    );
+  }
 
   $form['border_radius']['different_values'] = array(
     '#type' => 'checkbox',
@@ -569,42 +618,34 @@ function nd_visualshortcodes_ajax_backend_shortcode_form($form, &$form_state) {
       )
     )
   );
-  $form['border_radius']['container']['style_border_radius_left'] = array(
+  $form['border_radius']['container']['style_border_top_left_radius'] = array(
     '#type' => 'textfield',
-    '#title' => t('Border Radius Left'),
-    '#default_value' => isset($attrs['style_border_radius_left']) ? $attrs['style_border_radius_left'] : '',
+    '#title' => t('Border Radius Top Left'),
+    '#default_value' => isset($attrs['style_border_top_left_radius']) ? $attrs['style_border_top_left_radius'] : '',
     '#prefix' => '<div class = "col-xs-3 centered">',
     '#suffix' => '</div>',
     '#attributes' => array('class' => array('form-control'))
   );
-  $form['border_radius']['container']['style_border_radius_left'] = array(
+  $form['border_radius']['container']['style_border_bottom_left_radius'] = array(
     '#type' => 'textfield',
-    '#title' => t('Border Radius Left'),
-    '#default_value' => isset($attrs['style_border_radius_left']) ? $attrs['style_border_radius_left'] : '',
+    '#title' => t('Border Radius Bottom Left'),
+    '#default_value' => isset($attrs['style_border_bottom_left_radius']) ? $attrs['style_border_bottom_left_radius'] : '',
     '#prefix' => '<div class = "col-xs-3 centered">',
     '#suffix' => '</div>',
     '#attributes' => array('class' => array('form-control'))
   );
-  $form['border_radius']['container']['style_border_radius_right'] = array(
+  $form['border_radius']['container']['style_border_top_right_radius'] = array(
     '#type' => 'textfield',
-    '#title' => t('Border Radius Right'),
-    '#default_value' => isset($attrs['style_border_radius_right']) ? $attrs['style_border_radius_right'] : '',
+    '#title' => t('Border Radius Top Right'),
+    '#default_value' => isset($attrs['style_border_top_right_radius']) ? $attrs['style_border_top_right_radius'] : '',
     '#prefix' => '<div class = "col-xs-3 centered">',
     '#suffix' => '</div>',
     '#attributes' => array('class' => array('form-control'))
   );
-  $form['border_radius']['container']['style_border_radius_top'] = array(
+  $form['border_radius']['container']['style_border_bottom_right_radius'] = array(
     '#type' => 'textfield',
-    '#title' => t('Border Radius Top'),
-    '#default_value' => isset($attrs['style_border_radius_top']) ? $attrs['style_border_radius_top'] : '',
-    '#prefix' => '<div class = "col-xs-3 centered">',
-    '#suffix' => '</div>',
-    '#attributes' => array('class' => array('form-control'))
-  );
-  $form['border_radius']['container']['style_border_radius_bottom'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Border Radius Bottom'),
-    '#default_value' => isset($attrs['style_border_radius_bottom']) ? $attrs['style_border_radius_bottom'] : '',
+    '#title' => t('Border Radius Bottom Right'),
+    '#default_value' => isset($attrs['style_border_bottom_right_radius']) ? $attrs['style_border_bottom_right_radius'] : '',
     '#prefix' => '<div class = "col-xs-3 centered">',
     '#suffix' => '</div>',
     '#attributes' => array('class' => array('form-control'))
@@ -669,7 +710,7 @@ function nd_visualshortcodes_ajax_shortcodes_list() {
   $output .= '<div class = "nd_visualshortcodes_enabled_list_search"><input type = "text" class = "form-control" ' . $value . 'placeholder = "Search shortcode"/></div>';
   $output .= '<div class = "nd_visualshortcodes_enabled_links">';
   foreach($shortcodes as $name => $shortcode) {
-    $icon = $shortcode['icon'] ? '<i class = "' . $shortcode['icon'] . '"></i>' : '';
+    $icon = isset($shortcode['icon']) && $shortcode['icon'] ? '<i class = "' . $shortcode['icon'] . '"></i>' : '';
     $output .= '<a href = "#" data-title = "' . strtolower($shortcode['title']) . '" data-shortcode = "' . $name . '" class = "btn btn-md btn-info"><span>' . $icon . $shortcode['title'] . '</span></a>';
   }
   $output .= '</div></div>';
@@ -725,6 +766,16 @@ function nd_visualshortcodes_ajax_shortcodes_list_add() {
   drupal_exit();
 }
 
+function nd_visualshortcodes_ajax_shortcodes_save() {
+  db_insert('nd_visualshortcodes_saved')->fields(array('name' => $_POST['name'], 'code' => $_POST['code']))->execute();
+  drupal_exit();
+}
+
+function nd_visualshortcodes_ajax_shortcodes_delete_saved() {
+  db_delete('nd_visualshortcodes_saved')->condition('id', $_POST['id'])->execute();
+  drupal_exit();
+}
+
 function nd_visualshortcodes_process_shortcodes($text, $format) {
   $text = trim($text);
   // Wrap any code in begining of the text, search to first shortcode
@@ -753,18 +804,57 @@ function nd_visualshortcodes_process_shortcodes($text, $format) {
   return $text;
 }
 
+function _nd_shortcode_process_tag(array $m, $filter) {
+  // Get tags from the static cache.
+  $shortcodes = _shortcode_get_shortcodes($filter);
+
+  $tag = $m[2];
+
+  if (!empty($shortcodes[$tag])) {
+    // Process if tag exists (enabled).
+    $attr = _shortcode_parse_attrs($m[3]);
+    /*
+    * @codingStandardsIgnoreStart
+    * 0 - the full tag text?
+    * 1/5 - An extra [ or ] to allow for escaping ShortCodes with double [[]]
+    * 2 - The ShortCode name
+    * 3 - The ShortCode argument list
+    * 4 - The content of a ShortCode when it wraps some content.
+    * @codingStandardsIgnoreEnd
+     */
+
+    if (!is_null($m[4])) {
+      // This is an enclosing tag, means extra parameter is present.
+      if (is_string($filter->functions[$tag]) && function_exists($filter->functions[$tag])) {
+        return $m[1] . call_user_func($filter->functions[$tag], $attr, $m[4], $m[2]) . $m[5];
+      }
+      return $m[1] . $m[5];
+    }
+    else {
+      // This is a self-closing tag.
+      if (is_string($filter->functions[$tag]) && function_exists($filter->functions[$tag])) {
+        return $m[1] . call_user_func($filter->functions[$tag], $attr, NULL, $m[2]) . $m[5];
+      }
+      return $m[1] . $m[5];
+    }
+  }
+  elseif (is_null($m[4])) {
+    return $m[4];
+  }
+
+  return '';
+}
+
 /**
  * Processes the Shortcodes according to the text and the text format.
  */
 function _nd_visualshortcodes_backend_process($text, $filter) {
   $shortcodes = shortcode_list_all();
-  $shortcodes_enabled = array();
+  $shortcodes_enabled = _shortcode_get_shortcodes($filter);
 
   foreach ($filter->settings as $name => $value) {
     if ($value && !empty($shortcodes[$name]['process callback'])) {
-      $shortcodes_enabled[$name] = array(
-        'function' => isset($shortcodes[$name]['process backend callback']) ? $shortcodes[$name]['process backend callback'] : '_nd_visualshortcodes_backend_element',
-      );
+      $filter->functions[$name] = isset($shortcodes[$name]['process backend callback']) ? $shortcodes[$name]['process backend callback'] : '_nd_visualshortcodes_backend_element';
     }
   }
 
@@ -772,10 +862,7 @@ function _nd_visualshortcodes_backend_process($text, $filter) {
     return $text;
   }
 
-  // Save the Shortcodes in the local cache.
-  _shortcode_tags($shortcodes_enabled);
-
-  // Processing recursively, now embeding tags within other tags is supported!
+  // Processing recursively, now embedding tags within other tags is supported!
   $chunks = preg_split('!(\[{1,2}.*?\]{1,2})!', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 
   $heap = array();
@@ -796,10 +883,9 @@ function _nd_visualshortcodes_backend_process($text, $filter) {
         $c = substr($c, 1, -1);
       }
     }
-    // Decide this is a Shortcode tag or not.
+    // Decide this is a ShortCode tag or not.
     if (!$escaped && ($c[0] == '[') && (substr($c, -1, 1) == ']')) {
-      // The $c maybe contains Shortcode macro.
-
+      // The $c maybe contains ShortCode macro.
       // This is maybe a self-closing tag.
       // Removes outer [].
       $original_text = $c;
@@ -810,7 +896,7 @@ function _nd_visualshortcodes_backend_process($text, $filter) {
       $tag = array_shift($ts);
       $tag = trim($tag, '/');
 
-      if (!shortcode_is_tag($tag)) {
+      if (!isset($shortcodes_enabled[$tag])) {
         // The current tag is not enabled.
         array_unshift($heap_index, '_string_');
         array_unshift($heap, $original_text);
@@ -820,10 +906,10 @@ function _nd_visualshortcodes_backend_process($text, $filter) {
         /*
          * The exploded array elements meaning:
          * 0 - the full tag text?
-         * 1/5 - An extra [] to allow for escaping Shortcodes with double [[]].
-         * 2 - The Shortcode name.
-         * 3 - The Shortcode argument list.
-         * 4 - The content of a Shortcode when it wraps some content.
+         * 1/5 - An extra [] to allow for escaping ShortCodes with double [[]].
+         * 2 - The ShortCode name.
+         * 3 - The ShortCode argument list.
+         * 4 - The content of a ShortCode when it wraps some content.
          */
 
         $m = array(
@@ -835,7 +921,7 @@ function _nd_visualshortcodes_backend_process($text, $filter) {
           '',
         );
         array_unshift($heap_index, '_string_');
-        array_unshift($heap, _shortcode_process_tag($m));
+        array_unshift($heap, _nd_shortcode_process_tag($m, $filter));
       }
       elseif ($c[0] == '/') {
         // Indicate a closing tag, so we process the heap.
@@ -860,7 +946,7 @@ function _nd_visualshortcodes_backend_process($text, $filter) {
               implode('', $process_heap),
               '',
             );
-            $str = _shortcode_process_tag($m);
+            $str = _nd_shortcode_process_tag($m, $filter);
             array_unshift($heap_index, '_string_');
             array_unshift($heap, $str);
             $found = TRUE;
@@ -886,7 +972,7 @@ function _nd_visualshortcodes_backend_process($text, $filter) {
         array_unshift($heap_index, $tag);
         array_unshift($heap, implode(' ', $ts));
       }
-      // If escaped or not a Shortcode.
+      // If escaped or not a ShortCode.
     }
     else {
       // Maybe not found a pair?
@@ -902,21 +988,36 @@ function _nd_visualshortcodes_backend_process($text, $filter) {
 function _nd_visualshortcodes_backend_description($attrs, $text) {
   $description = '';
   $shortcodes = shortcode_list_all();
+  $function_description = $shortcodes[$attrs['shortcode']]['process callback'] . '_description';
   if(isset($shortcodes[$attrs['shortcode']]['description_field'])) {
     $field = $shortcodes[$attrs['shortcode']]['description_field'];
     if(isset($attrs[$field]) && $attrs[$field]) {
       $description = ' <small>(' . truncate_utf8($attrs[$field], 40, TRUE, TRUE) . ')</small>';
     }
-    elseif($attrs['shortcode'] == 'html') {
-      $text = trim(strip_tags($text));
-      $description = $text ? ' <small>(' . truncate_utf8($text, 30, TRUE, TRUE) . ')</small>' : '';
-    }
   }
-  elseif(isset($shortcodes[$attrs['shortcode']]['description_callback'])) {
-    $text = call_user_func($shortcodes[$attrs['shortcode']]['description_callback'], $attrs, $text);
+  elseif(function_exists($function_description)) {
+    $text = call_user_func($function_description, $attrs, $text);
     $description = $text ? ' <small>(' . $text . ')</small>' : '';
   }
   return $description;
+}
+
+function nd_visualshortcodes_preview($el, $attrs, $text) {
+  $preview = '';
+  $shortcodes = shortcode_list_all();
+  $function_preview = $shortcodes[$el]['process callback'] . '_preview';
+  $preview = '';
+  if($el == 'a_nd_saved') {
+    $preview = nd_visualshortcodes_shortcode_saved($attrs, $text);
+  }
+  elseif(function_exists($function_preview)) {
+    $preview = $function_preview($attrs, $text);
+  }
+  elseif((!isset($shortcodes[$el]['preview']) || $shortcodes[$el]['preview'] !== FALSE) && !in_array($el, array('node', 'view', 'block', 'menu', 'nd_node', 'nd_view', 'nd_block', 'nd_menu'))) {
+    $preview = $shortcodes[$el]['process callback']($attrs, $text);
+  }
+  $preview = $el == 'a_nd_saved' ? $preview : str_replace(array('<ul', '</ul>', '<li', '</li>', '<ol', '</ol>'), array('<div class = "ul"', '</div>', '<div class = "li"', '</div>', '<div class = "ol"', '</div>'), $preview);
+  return $preview;
 }
 
 function _nd_visualshortcodes_backend_element($attrs, $text, $el = '') {
@@ -925,14 +1026,11 @@ function _nd_visualshortcodes_backend_element($attrs, $text, $el = '') {
   if(isset($attrs['class'])) {
     $attrs['extra_classes'] = $attrs['class'] . (isset($attrs['extra_classes']) ? ' ' . $attrs['extra_classes'] : '');
   }
-  $settings = variable_get('nd_visualshortcodes', array());
-  $live_preview = isset($settings['live_preview']) && $settings['live_preview'] && !isset($shortcodes[$el]['live preview']) ? TRUE : FALSE;
-  $preview = $live_preview && empty($text) ? '<div class = "nd_backend_preview">' . $shortcodes[$el]['process callback']($attrs, $text) . '</div>' : '';
   $attrs['class'] = 'row shortcode-processed nd-visualshortcodes-sortable nd-visualshortcodes-parent-wrap';
   $attrs['shortcode'] = $el;
   $title = is_array($shortcodes[$el]['title']) ? '' : $shortcodes[$el]['title'];
   $text = is_array($text) ? '' : $text;
-  return '<li ' . drupal_attributes($attrs) . '><div class = "border-style clearfix"><h3><i class="fa fa-arrows"></i><span>' . $title . _nd_visualshortcodes_backend_description($attrs, $text) . '</span><span class = "nd-visualshortcodes-settings-links"><i class="fa fa-copy nd-visualshortcodes-copy"></i><i class="fa fa-plus-square nd_visualshortcodes_add"></i><i class="fa fa-edit shortcode-settings"></i></span></h3><ol class = "nd-visualshortcodes-parent">' . $text . $preview . '</ol></div></li>';
+  return '<li ' . drupal_attributes($attrs) . '><div class = "border-style clearfix"><h3><i class="fa fa-arrows"></i><span>' . $title . _nd_visualshortcodes_backend_description($attrs, $text) . '</span><span class = "nd-visualshortcodes-settings-links"><i class="fa fa-save nd-visualshortcodes-save"></i><i class="fa fa-copy nd-visualshortcodes-copy"></i><i class="fa fa-plus-square nd_visualshortcodes_add"></i><i class="fa fa-edit shortcode-settings"></i></span></h3><ol class = "nd-visualshortcodes-parent">' . $text . '</ol></div></li>';
 }
 
 function nd_visualshortcodes_backend_nochilds($attrs, $text, $el = '') {
@@ -945,9 +1043,8 @@ function nd_visualshortcodes_backend_nochilds($attrs, $text, $el = '') {
   if(isset($attrs['class'])) {
     $attrs['extra_classes'] = $attrs['class'] . (isset($attrs['extra_classes']) ? ' ' . $attrs['extra_classes'] : '');
   }
-  $settings = variable_get('nd_visualshortcodes', array());
-  $live_preview = isset($settings['live_preview']) && $settings['live_preview'] && !isset($shortcodes[$el]['live preview']) ? TRUE : FALSE;
-  $preview = $live_preview ? '<div class = "nd_backend_preview">' . $shortcodes[$el]['process callback']($attrs, $text) . '</div>' : '';
+  $preview = '<div class = "nd_backend_preview">' . nd_visualshortcodes_preview($el, $attrs, $text) . '</div>';
+
   $attrs['class'] = 'row shortcode-processed nd-visualshortcodes-sortable';
   $attrs['shortcode'] = $el;
   return '<li ' . drupal_attributes($attrs) . '><div class = "border-style border-none clearfix"><h3><i class="fa fa-arrows"></i><span>' . $shortcodes[$el]['title'] . _nd_visualshortcodes_backend_description($attrs, $text) . '</span><span class = "nd-visualshortcodes-settings-links"><i class="fa fa-copy nd-visualshortcodes-copy"></i><i class="fa fa-edit shortcode-settings"></i></span></h3><div class = "hidden">' . $text . '</div>' . $preview . '</div></li>';
@@ -960,7 +1057,7 @@ function nd_visualshortcodes_backend_row($attrs, $text, $el = '') {
   }
   $attrs['class'] = 'row shortcode-processed nd-visualshortcodes-sortable nd-visualshortcodes-parent-wrap';
   $attrs['shortcode'] = $el;
-  return '<li ' . drupal_attributes($attrs) . '><div class = "border-style clearfix"><h3><i class="fa fa-arrows"></i><span>' . $shortcodes[$el]['title'] . _nd_visualshortcodes_backend_description($attrs, $text) . '</span><span class = "nd-visualshortcodes-settings-links"><i class="fa fa-copy nd-visualshortcodes-copy"></i><i class="fa fa-plus-square nd_visualshortcodes_add"></i><i class="fa fa-edit shortcode-settings"></i></span></h3><ol class = "row nd-visualshortcodes-parent">' . $text . '</ol></div></li>';
+  return '<li ' . drupal_attributes($attrs) . '><div class = "border-style clearfix"><h3><i class="fa fa-arrows"></i><span>' . $shortcodes[$el]['title'] . _nd_visualshortcodes_backend_description($attrs, $text) . '</span><span class = "nd-visualshortcodes-settings-links"><i class="fa fa-save nd-visualshortcodes-save"></i><i class="fa fa-copy nd-visualshortcodes-copy"></i><i class="fa fa-plus-square nd_visualshortcodes_add"></i><i class="fa fa-edit shortcode-settings"></i></span></h3><ol class = "row nd-visualshortcodes-parent">' . $text . '</ol></div></li>';
 }
 
 function nd_visualshortcodes_backend_col($attrs, $text, $el = '') {
@@ -982,12 +1079,12 @@ function nd_visualshortcodes_backend_col($attrs, $text, $el = '') {
     $attrs['class'] .= ' col-lg-' . $attrs['wide'];
   }
   $attrs['shortcode'] = $el;
-  return '<li ' . drupal_attributes($attrs) . '><div class = "border-style clearfix"><h3><i class="fa fa-arrows"></i><span>' . $shortcodes[$el]['title'] . _nd_visualshortcodes_backend_description($attrs, $text) . '</span><span class = "nd-visualshortcodes-settings-links"><i class="fa fa-copy nd-visualshortcodes-copy"></i><i class="fa fa-plus-square nd_visualshortcodes_add"></i><i class="fa fa-edit shortcode-settings"></i></span></h3><ol class = "nd-visualshortcodes-parent">' . $text . '</ol></div></li>';
+  return '<li ' . drupal_attributes($attrs) . '><div class = "border-style clearfix"><h3><i class="fa fa-arrows"></i><span>' . $shortcodes[$el]['title'] . _nd_visualshortcodes_backend_description($attrs, $text) . '</span><span class = "nd-visualshortcodes-settings-links"><i class="fa fa-save nd-visualshortcodes-save"></i><i class="fa fa-copy nd-visualshortcodes-copy"></i><i class="fa fa-plus-square nd_visualshortcodes_add"></i><i class="fa fa-edit shortcode-settings"></i></span></h3><ol class = "nd-visualshortcodes-parent">' . $text . '</ol></div></li>';
 }
 
 function nd_visualshortcodes_shortcode_html_settings($attrs, $text) {
   // Name should be unical because WYSIWYG editor will conflict during multi-fields upload
-  $form['text_' . mktime()] = array(
+  $form['text_' . time()] = array(
     '#type' => 'text_format',
     '#title' => t('HTML'),
     '#default_value' => $text,

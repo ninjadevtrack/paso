@@ -9,13 +9,6 @@ module_load_include('inc', 'nikadevs_cms', 'shortcodes/nikadevs_cms_shortcodes')
  *
  */
 function nikadevs_cms_init() {
-  if (user_access('use nikadevs cms') && theme_get_setting('support', variable_get('theme_default', 'none'))) {
-    $module_path = drupal_get_path('module', 'nikadevs_cms');
-    drupal_add_js($module_path . '/support/js/html2canvas.js');
-    drupal_add_js($module_path . '/support/js/feedback.js');
-    drupal_add_css($module_path . '/support/css/feedback.css');
-    drupal_add_js(array('nikadevs_cms' => array('module_path' => $module_path, 'site_mail' => variable_get('site_mail', '') == '' ? 0 : 1)), 'setting');
-  }
   if(strpos($_GET['q'], 'admin/structure/md-slider') !== FALSE) {
     drupal_add_css('
     html{
@@ -72,13 +65,13 @@ function nikadevs_cms_layout_builder() {
   drupal_add_css('//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css', 'external');
 
   // Get all regions for current theme
-  $current_theme = variable_get('theme_default', 'none');
+  
+  $current_theme = variable_get('theme_default', '');
   $themes = list_themes();
   $theme = $themes[$current_theme];  
   $regions = $theme->info['regions'];
 
-  // Get layouts for current theme
-  $layouts = variable_get('nikadevs_cms_layout_' . $current_theme, array(
+  $default = array(
     'layout-default' => array(
       'name' => t('Default'),
       'pages' => '',
@@ -87,12 +80,18 @@ function nikadevs_cms_layout_builder() {
           'name' => t('Hidden') ,
           'attributes' => array(
             'id' => 'id-0',
-            'class' => array('sortable', 'row', 'sortable-parent'))
+            'class' => array('sortable', 'row', 'sortable-parent')
           )
         )
       )
     )
   );
+
+  // Get layouts for current theme
+  $layouts = variable_get('nikadevs_cms_layout_' . $current_theme, array());
+  if(empty($layouts) || !isset($layouts['layout-default'])) {
+    $layouts = $default;
+  }
 
   // Add new regions
   foreach($regions as $key => $region) {
@@ -171,7 +170,8 @@ function nikadevs_cms_page_layout($vars = array()) {
 }
 
 function nikadevs_cms_layout_builder_update() {
-  $current_theme = variable_get('theme_default', 'none');
+  $current_theme = variable_get('theme_default', '');
+
   $layouts = variable_get('nikadevs_cms_layout_' . $current_theme, array());
 
   if(isset($_POST['op']) && $_POST['op'] == 'delete') {
@@ -193,7 +193,8 @@ function nikadevs_cms_form_alter(&$form, &$form_state, &$form_id) {
   if($form_id == 'block_admin_display_form' || strpos($form_id, 'block_') === 0) {
     drupal_add_library('system', 'ui.dialog');
     // Get current settings
-    $current_theme = variable_get('theme_default', 'none');
+    $current_theme = variable_get('theme_default', '');
+
     $settings = variable_get('nikadevs_cms_block_settings_' . $current_theme, array());
     drupal_add_js(array('nikadevs_cms' => array('block_settings' => $settings)), 'setting');
     // Add icons
@@ -225,7 +226,7 @@ function nikadevs_cms_block_settings_update() {
 }
 
 function nikadevs_cms_preprocess_block(&$variables) {
-  $current_theme = variable_get('theme_default', 'none');
+  $current_theme = variable_get('theme_default', '');
   $settings = variable_get('nikadevs_cms_block_settings_' . $current_theme, array());
 
   $variables['tag'] = 'div';
@@ -255,6 +256,11 @@ function nikadevs_cms_menu() {
     'page callback' => 'nikadevs_cms_admin',
     'access arguments' => array('use nikadevs cms'),
   );
+  $items['admin/drop_layout_builder'] = array(
+    'page callback' => 'nikadevs_cms_drop_layout_builder',
+    'access arguments' => array('use nikadevs cms'),
+    'type' => MENU_CALLBACK,
+  );
   $items['nikadevs_cms/layout_builder/update'] = array(
     'page callback' => 'nikadevs_cms_layout_builder_update',
     'access arguments' => array('use nikadevs cms'),
@@ -262,11 +268,6 @@ function nikadevs_cms_menu() {
   );
   $items['nikadevs_cms/block_settings/update'] = array(
     'page callback' => 'nikadevs_cms_block_settings_update',
-    'access arguments' => array('use nikadevs cms'),
-    'type' => MENU_CALLBACK,
-  );
-  $items['nikadevs_cms/support'] = array(
-    'page callback' => 'nikadevs_cms_support',
     'access arguments' => array('use nikadevs cms'),
     'type' => MENU_CALLBACK,
   );
@@ -283,7 +284,47 @@ function nikadevs_cms_menu() {
     'access arguments' => array('use nikadevs cms'),
     'type' => MENU_LOCAL_TASK,
   );
+  $items['nikadevs_cms/clean_layouts'] = array(
+    'page callback' => 'nikadevs_cms_clean_layouts',
+    'access arguments' => array('use nikadevs cms'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/release'] = array(
+    'description' => '',
+    'access arguments' => array('administer content types'),
+    'page callback' => 'nikadevs_dev_release',
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/release/delete'] = array(
+    'description' => '',
+    'access arguments' => array('administer content types'),
+    'page callback' => 'nikadevs_dev_release_delete',
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/release/export_layouts'] = array(
+    'description' => '',
+    'access arguments' => array('administer content types'),
+    'page callback' => 'nikadevs_dev_export_layouts',
+    'type' => MENU_CALLBACK,
+  );
   return $items;
+}
+
+function nikadevs_dev_export_layouts() {
+  $current_theme = variable_get('theme_default', '');
+  $value = variable_get('nikadevs_cms_layout_' . $current_theme);
+  $var_str = var_export($value, true);
+  $var = "<?php\n\n\$layouts = $var_str;\n\n?>";
+  $theme = str_replace('_sub', '', $current_theme);
+  $path = drupal_get_path('module', $theme . '_cms') . '/' . $theme . '_layoutbuilder_import/' . $theme . '_cms_layout_builder_settings.php';
+  file_put_contents($path, $var);
+  print $var;
+}
+
+function nikadevs_cms_clean_layouts() {
+  $theme = variable_get('theme_default', '');
+  variable_del('nikadevs_cms_layout_' . $current_theme);
+  variable_del('nikadevs_cms_layout_' . $current_theme . '_sub');
 }
 
 function nikadevs_cms_filedelete($file) {
@@ -295,19 +336,6 @@ function nikadevs_cms_filedelete($file) {
 
 function nikadevs_cms_admin() {
   return t('Welcome to NikaDevs Admin pages.');
-}
-
-function nikadevs_cms_support() {
-  $json = json_decode($_POST['data']);  
-  $issue = $json[0]->Issue;
-  // Remove information about base64 string
-  $data = explode(',', $json[1]);
-  $attachment = $data[1];
-  module_load_include('inc', 'nikadevs_cms', 'support/inc/nikadevs_cms_attachment_mail');
-  $from = variable_get('site_mail', theme_get_setting('email', variable_get('theme_default', 'none')));
-  $body = "Issue: $issue\n\nTheme: " . variable_get('theme_default', 'none');
-  $email = new AttachmentEmail('support@nikadevs.com', $from, 'Support request', $body, $attachment);
-  $email->send();
 }
 
 /**
@@ -372,7 +400,6 @@ function nikadevs_cms_filter_info() {
     'description' => t('Alias of Shortcodes with disabled CACHE. Use for dynamic content such as VIEW.'),
     'process callback' => '_nikadevs_cms_shortcode_process',
     'settings callback' => '_shortcode_settings_form',
-    //'tips callback' => '_nikadevs_cms_shortcode_filter_tips',
     'cache' => FALSE,
   );
   return $filters;
@@ -391,16 +418,15 @@ function nikadevs_cms_filter_info_alter(&$info) {
  * Processes the Static Shortcodes according to the text and the text format.
  */
 function _nikadevs_cms_static_shortcode_process($text, $filter) {
-  $text = str_replace(array('{{', '}}', '|{', '|}'), array('[', ']', '<', '>'), $text);
+  $text = str_replace(array('|LS|', '|RS|', '|LF|', '|RF|', '|{', '|}'), array('[', ']', '{', '}', '<', '>'), $text);
   return _shortcode_process($text, $filter);
 }
-
 
 /**
  * Processes the Dynamic Shortcodes according to the text and the text format.
  */
 function _nikadevs_cms_shortcode_process($text, $filter) {
-  $text = str_replace(array('{{', '}}', '|{', '|}'), array('[', ']', '<', '>'), $text);
+  $text = str_replace(array('|LS|', '|RS|', '|LF|', '|RF|', '|{', '|}'), array('[', ']', '{', '}', '<', '>'), $text);
   $shortcodes = shortcode_list_all();
   $shortcodes_enabled = array();
   foreach ($filter->settings as $name => $value) {
@@ -415,10 +441,7 @@ function _nikadevs_cms_shortcode_process($text, $filter) {
     return $text;
   }
 
-  // Save the Shortcodes in the local cache.
-  _shortcode_tags($shortcodes_enabled);
-
-  // Processing recursively, now embeding tags within other tags is supported!
+  // Processing recursively, now embedding tags within other tags is supported!
   $chunks = preg_split('!(\[{1,2}.*?\]{1,2})!', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 
   $heap = array();
@@ -439,10 +462,9 @@ function _nikadevs_cms_shortcode_process($text, $filter) {
         $c = substr($c, 1, -1);
       }
     }
-    // Decide this is a Shortcode tag or not.
+    // Decide this is a ShortCode tag or not.
     if (!$escaped && ($c[0] == '[') && (substr($c, -1, 1) == ']')) {
-      // The $c maybe contains Shortcode macro.
-
+      // The $c maybe contains ShortCode macro.
       // This is maybe a self-closing tag.
       // Removes outer [].
       $original_text = $c;
@@ -463,10 +485,10 @@ function _nikadevs_cms_shortcode_process($text, $filter) {
         /*
          * The exploded array elements meaning:
          * 0 - the full tag text?
-         * 1/5 - An extra [] to allow for escaping Shortcodes with double [[]].
-         * 2 - The Shortcode name.
-         * 3 - The Shortcode argument list.
-         * 4 - The content of a Shortcode when it wraps some content.
+         * 1/5 - An extra [] to allow for escaping ShortCodes with double [[]].
+         * 2 - The ShortCode name.
+         * 3 - The ShortCode argument list.
+         * 4 - The content of a ShortCode when it wraps some content.
          */
 
         $m = array(
@@ -478,9 +500,7 @@ function _nikadevs_cms_shortcode_process($text, $filter) {
           '',
         );
         array_unshift($heap_index, '_string_');
-        array_unshift($heap, _shortcode_process_tag($m));
-        // In shortcode can be used another Format with differents shortcodes, so restore the cache
-        _shortcode_tags($shortcodes_enabled);
+        array_unshift($heap, _shortcode_process_tag($m, $filter));
       }
       elseif ($c[0] == '/') {
         // Indicate a closing tag, so we process the heap.
@@ -505,9 +525,7 @@ function _nikadevs_cms_shortcode_process($text, $filter) {
               implode('', $process_heap),
               '',
             );
-            $str = _shortcode_process_tag($m);
-            // In shortcode can be used another Format with differents shortcodes, so restore the cache
-            _shortcode_tags($shortcodes_enabled);
+            $str = _shortcode_process_tag($m, $filter);
             array_unshift($heap_index, '_string_');
             array_unshift($heap, $str);
             $found = TRUE;
@@ -533,7 +551,7 @@ function _nikadevs_cms_shortcode_process($text, $filter) {
         array_unshift($heap_index, $tag);
         array_unshift($heap, implode(' ', $ts));
       }
-      // If escaped or not a Shortcode.
+      // If escaped or not a ShortCode.
     }
     else {
       // Maybe not found a pair?
@@ -597,4 +615,67 @@ function _nikadevs_cms_shortcode_list_all_enabled($format, $reset = FALSE) {
   }
 
   return $shortcodes_enabled[$format->format];
+}
+
+function nikadevs_dev_release_delete() {
+  db_truncate('cache')->execute();
+  db_truncate('cache_admin_menu')->execute();
+  db_truncate('cache_block')->execute();
+  db_truncate('cache_bootstrap')->execute();
+  db_truncate('cache_field')->execute();
+  db_truncate('cache_filter')->execute();
+  db_truncate('cache_form')->execute();
+  db_truncate('cache_image')->execute();
+  db_truncate('cache_menu')->execute();
+  db_truncate('cache_page')->execute();
+  db_truncate('cache_path')->execute();
+  db_truncate('cache_token')->execute();
+  db_truncate('cache_views')->execute();
+  db_truncate('cache_views_data')->execute();
+  db_truncate('watchdog')->execute();
+  db_delete('system')->condition('name', 'nikadevs_dev')->execute();
+  print 'Nikadevs DEV - deleted';
+  exit();
+}
+
+function nikadevs_dev_release() {
+  if(arg(2)) {
+    return 'Exit';
+  }
+  // Update files directories
+  variable_set('file_public_path', 'sites/default/files');
+  variable_set('file_temporary_path', 'sites/default/files/tmp');
+  variable_del('site_mail', '');
+  variable_del('update_notify_emails', '');
+
+  // Remove contact recipients emails
+  //db_update('contact')->fields(array('recipients' => ''))->execute();
+
+  $settings = variable_get('theme_' . variable_get('theme_default', '') . 'settings', array());
+  $settings['gmap_key'] = '';
+  variable_set('theme_' . variable_get('theme_default', '') . 'settings', $settings);
+
+  // Flikr secret key remove
+  variable_set('flickr_api_key', '');
+  variable_set('flickr_api_secret', '');
+
+  db_update('users')->fields(
+    array(
+      'name' => 'Admin',
+      'pass' => '$S$DuddJXP/pGSXJgCtWSYxSEvsG0pIqfPVTGt0OaJObxV2zb3YqTxG',
+      'mail' => 'admin@example.com',
+      'init' => 'admin@example.com'
+    ))
+    ->condition('uid', 1)->execute();
+
+  $res = db_select('file_managed', 'f')->fields('f')->execute();
+  $module_path = drupal_get_path('module', 'nikadevs_cms');
+  foreach($res as $row) {
+    if(strpos($row->uri, 'map-base') !== FALSE) {
+      continue;
+    }
+    copy($module_path . '/images/upload_image.png', drupal_realpath($row->uri));
+  }
+
+  return 'Done';
 }

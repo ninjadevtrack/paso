@@ -156,7 +156,8 @@ function theme_nikadevs_cms_background_table($form) {
   foreach (element_children($form['form']) as $key) {
     $element = &$form['form'][$key];
     $row = array(render($element['pages']));
-    $image = $element['fid']['#default_value'] ? '<div class = "media-item">' . theme('image_style', array('style_name' => 'media_thumbnail', 'path' => file_load($element['fid']['#default_value'])->uri)) . '</div>': '';
+    $file = $element['fid']['#default_value'] ? file_load($element['fid']['#default_value']) : 0;
+    $image = $file && isset($file->uri) ? '<div class = "media-item">' . theme('image_style', array('style_name' => 'media_thumbnail', 'path' => file_load($element['fid']['#default_value'])->uri)) . '</div>': '';
     $row[] = '<div class = "bg-image-preview" style = "float:left;">' . $image . '</div>' . render($element['fid']);
     $row[] = '<a class="button upload_bg_image" href="#">Select Image</a>';
     $row[] = render($element['blur']);
@@ -187,7 +188,7 @@ function nikadevs_cms_preprocess_html(&$variables) {
       // If match found - use this layout
       if($page_match) {
         $file = file_load($setting['fid']);
-        if($file->fid) {
+        if(isset($file->fid) && $file->fid) {
           $image = file_create_url($file->uri);
           $css = "background-image: url('" . $image . "') !important;
             background-repeat: no-repeat;

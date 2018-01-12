@@ -8,8 +8,13 @@ function _nikadevs_render_block($module, $delta) {
 function _nikadevs_cms_get_active_layout() {
   $layout = &drupal_static(__FUNCTION__);
   if (!isset($layout)) {
-    $current_theme = variable_get('theme_default', 'none');
+    global $theme_key;
+    $current_theme = $theme_key;
     $layouts = variable_get('nikadevs_cms_layout_' . $current_theme, array());
+    if(!is_array($layouts) || empty($layouts)) {
+      $layout = array();
+      return $layout;
+    }
     $active_layout = 'layout-default';
     foreach($layouts as $layout_key => $layout) {
       if(!empty($layout['pages'])) {
@@ -30,7 +35,8 @@ function _nikadevs_cms_get_active_layout() {
     }
     
     if(!isset($layouts[$active_layout])) {
-      return array();
+      $layout = array();
+      return $layout;
     }
     $layout = $layouts[$active_layout];
     unset($layout['rows']['id-0']);
@@ -77,7 +83,7 @@ function _nikadevs_cms_get_active_layout() {
       $layout['rows'][$key]['settings']['suffix'] = isset($layout['rows'][$key]['settings']['suffix']) ? $layout['rows'][$key]['settings']['suffix'] : '';
       // Process Background settings
       if (isset($row['settings']['bg_image_type']) && $row['settings']['bg_image_type'] == 'image' && isset($row['settings']['bg_image_fid']) && $row['settings']['bg_image_fid'] && ($file = file_load($row['settings']['bg_image_fid']))) {
-        $bg_image = '<div class="fwb-bg ' . ($row['settings']['bg_image_parallax'] ? 'fwb-parallax' : '') . ' fwb-fixed" style = "background-image: url(\'' . file_create_url($file->uri) . '\');" data-stellar-background-ratio="0.5" data-stellar-vertical-offset="200">
+        $bg_image = '<div class="fwb-bg ' . (isset($row['settings']['bg_image_parallax']) && $row['settings']['bg_image_parallax'] ? 'fwb-parallax' : '') . ' fwb-fixed" style = "background-image: url(\'' . file_create_url($file->uri) . '\');" data-stellar-background-ratio="0.5" data-stellar-vertical-offset="200">
         ' . (isset($row['settings']['bg_image_overlay']) && $row['settings']['bg_image_overlay'] ? '<div class="overlay"></div>' : '') . '
         </div>';
         $layout['rows'][$key]['settings']['prefix'] .= $bg_image;
@@ -131,8 +137,9 @@ function _nikadevs_cms_active_layout($vars) {
           $layout['regions'][$key]['attributes']['style'] .= str_replace('_', '-', $padding) . ': ' . $region['settings'][$padding] . 'px; ';
         }
       }
+      $region['settings']['tag'] = isset($region['settings']['tag']) ? $region['settings']['tag'] : 'div';
       $layout['regions'][$key]['attributes']['class'][] = isset($region['settings']['class']) ? $region['settings']['class'] : '';
-      $layout['regions'][$key]['settings']['tag'] = isset($region['settings']['tag']) ? ($region['settings']['tag'] == 'none' ? '' : $region['settings']['tag']) : 'div';
+      $layout['regions'][$key]['settings']['tag'] = $region['settings']['tag'] == 'none' ? '' : $region['settings']['tag'];
       if (isset($region['settings']['block_id'])) {
         list($module, $delta) = explode('|', $region['settings']['block_id']);
         $render = _nikadevs_render_block($module, $delta);
@@ -144,4 +151,16 @@ function _nikadevs_cms_active_layout($vars) {
     }
   }
   return $layout;
+}
+
+/**
+* Parse user link into correct url
+*/
+function nikadevs_parse_url($link = '') {
+  $href = !empty($link) ? $link : '#';
+  if(strpos($href, '#') === FALSE) {
+    $url = drupal_parse_url($href);
+    $href = url($url['path'], $url);
+  }
+  return $href;
 }

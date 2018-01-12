@@ -39,7 +39,7 @@
             'row_id' : $(this).closest('.row').attr('id'),
             'name' : $(this).find('h3').text(),
             'attributes' : attributes($(this)),
-            'settings': typeof(settings['regions'][id]['settings']) != 'undefined' ? settings['regions'][id]['settings'] : {}
+            'settings': typeof(settings['regions']) != 'undefined' && typeof(settings['regions'][id]) != 'undefined' && typeof(settings['regions'][id]['settings']) != 'undefined' ? settings['regions'][id]['settings'] : {}
           };
         }
       });
@@ -474,7 +474,7 @@
 
     function row_settings_form() {
       // Show which row is setting up now
-      $(this).parents('.row').addClass('row-setting-open');
+      $(this).closest('.row').addClass('row-setting-open');
       // Clear form input
       $('#row-settings select, #row-settings input').val('').attr('checked', false);
       // Set row option on the form

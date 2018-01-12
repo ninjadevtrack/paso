@@ -5,8 +5,8 @@ var i = 0;
     attach: function (context, settings) {
 
         $('.upload_bg_image', context).click(function() {
-          if($('body > .ui-dialog').length) {
-            //return;
+          if($('body > .ui-dialog.media-wrapper').length) {
+            return;
           }
           $this = $(this);
           globalOptions = {};
