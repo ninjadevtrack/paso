@@ -74,6 +74,11 @@
  * @see template_process()
  */
 ?>
+<?php
+  global $language;
+  $translations = translation_path_get_translations("node/" . $node->nid);
+
+?>
 <div class="row">
   <div class="col-md-4">
     <?php if (isset($content['field_image'])): ?>
@@ -113,6 +118,7 @@
         </ul>
       </div>
     <?php endif;?>
+    <?php print l(($node->language == 'en') ? t('Español') : t('English'), ($node->language == 'en') ? $translations['es'] : $translations['en']); ?>
   </div>
 </div>
 
