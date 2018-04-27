@@ -159,6 +159,8 @@ $page['content']['#prefix'] = $messages . $tabs;
             }; ?>
             </div>
           </div>
+			
+			<div style="padding-top: 26px; line-height: 16px;"><a href="http://oneearthfuture.org/legal/rte" target="_blank">Solicitud de permanencia de OEF en el<br />Régimen Tributatio Especial Colombiano</a>.</div>
         </div>
       </div>
     </div>
