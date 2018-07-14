@@ -190,9 +190,9 @@ footer .contacts-widget .contacts-info-list > li a:hover
   .header .logo img {
     width: 300px !important;
   }
-	
+
 .md-object.text-black-shadow {
-    
+
     line-height: 16px;
 }
 .navbar-toggle {
@@ -208,8 +208,8 @@ footer .contacts-widget .contacts-info-list > li a:hover
 }
 .social-links-footer .social-links-wrapper {
     padding-top: 10px;
-	
-	
+
+
 }
 
 }
@@ -314,4 +314,7 @@ footer h3 {
 }
 .resources-content img {
   margin: 0 40px 20px 0;
+}
+.node-projects-new .tabs .nav-tabs > li {
+  width: auto;
 }
