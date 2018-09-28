@@ -318,3 +318,7 @@ footer h3 {
 .node-projects-new .tabs .nav-tabs > li {
   width: auto;
 }
+body.node-type-blog .main #content > ul.links.inline {
+  margin: -100px 0 50px 0;
+  position: relative;
+}
