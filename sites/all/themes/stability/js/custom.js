@@ -1,11 +1,11 @@
 /**
     * @package Stability Responsive HTML5 Template
-    * 
+    *
     * Template Scripts
     * Created by Dan Fisher
 
     Init JS
-    
+
     1. Main Navigation
     2. Isotope
     3. Magnific Popup
@@ -35,7 +35,7 @@ jQuery(function($){
         'hoverIntent':        true,          // Change to true for use with hoverIntent plugin
         'hoverIntentTimeout': 50,            // hoverIntent default timeout
         'calcItemWidths':     false,          // dynamically calcs top level nav item widths
-        'hover':              true            // would you like hover support?      
+        'hover':              true            // would you like hover support?
     });
 
 
@@ -68,7 +68,7 @@ jQuery(function($){
             var selector = $(this).attr('data-filter');
             $filter.find('a').removeClass('btn-primary').addClass('btn-default');
             $(this).addClass('btn-primary').removeClass('btn-default');
-            $container.isotope({ 
+            $container.isotope({
                 filter             : selector,
                 animationOptions   : {
                 animationDuration  : 750,
@@ -78,7 +78,7 @@ jQuery(function($){
             });
             return false;
         });
-       
+
     })(jQuery);
 
 
@@ -107,7 +107,7 @@ jQuery(function($){
             id: Drupal.settings.stability.flickr_id
         },
         itemTemplate: '<li><a href="{{link}}" target="_blank"><img src="{{image_s}}" alt="{{title}}" /></a></li>'
-    }, 
+    },
     function(data) {
         $(".flickr-feed li:nth-child(3n)").addClass("nomargin");
     });
@@ -201,7 +201,7 @@ jQuery(function($){
 
     // Back to Top
     $("#back-top").hide();
-    
+
     if($(window).width() > 991) {
         $('body').append('<div id="back-top"><a href="#top"><i class="fa fa-chevron-up"></i></a></div>')
         $(window).scroll(function () {
@@ -225,7 +225,7 @@ jQuery(function($){
     // Animation on scroll
     var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (isMobile == false) {
-        
+
         $("[data-animation]").each(function() {
 
         var $this = $(this);
@@ -253,7 +253,7 @@ jQuery(function($){
 
         }
 
-    });  
+    });
     }
 
 
@@ -393,8 +393,8 @@ jQuery(function($){
         $container.imagesLoaded( function(){
             $(window).smartresize();
         });
-        
-       
+
+
     })();
 
     // Parallax Background
@@ -432,12 +432,12 @@ jQuery(function($){
       $('.nav-tabs a').click(function() {
         var id = $(this).attr('href');
         setTimeout(function() {
-          
+
           $(id).once('fitVids-tabs', function() {
             $(this).find('.fluid-width-video-wrapper').removeClass('fluid-width-video-wrapper').css('padding-top', 0);
-            video_fit($(this));  
+            video_fit($(this));
           });
-          
+
         }, 500);
       });
 
@@ -458,7 +458,7 @@ jQuery(function($){
     /*  12. Circle Counter
     /* ----------------------------------------------------------- */
     if($('.header').hasClass('header-transparent') || $('.header').hasClass('header-fixed')) {
-      $(window).scroll(function() {    
+      $(window).scroll(function() {
         var scroll = $(window).scrollTop();
 
         if (scroll >= 400) {

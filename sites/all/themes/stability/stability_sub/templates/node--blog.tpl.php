@@ -131,7 +131,7 @@ foreach($fields as $field) {
 
   <?php if(in_array($field_blog_type[0]['value'], array('Standart', 'Image'))): ?>
     <?php if(!empty($field_images)): ?>
-      <div class="owl-carousel owl-theme owl-slider thumbnail">
+      <div class="owl-carousel owl-theme owl-slider owl-slider-autoPlay thumbnail">
         <?php foreach(element_children($content['field_images']) as $i): $content['field_images'][$i]['#image_style'] = 'blog_704_328'?>
           <div class="item">
             <?php print render($content['field_images'][$i]); ?>
