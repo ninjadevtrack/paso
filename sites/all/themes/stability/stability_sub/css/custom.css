@@ -322,3 +322,6 @@ body.node-type-blog .main #content > ul.links.inline {
   margin: -100px 0 50px 0;
   position: relative;
 }
+.node-projects-new .tab-content .embed-responsive.embed-responsive-4by3 {
+  height: 1410px;
+}
