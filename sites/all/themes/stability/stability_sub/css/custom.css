@@ -6,11 +6,7 @@ h2, .h2 {
 
 .header-main {position: relative;
     background-color: #ffffff;
-    background: url("/sites/default/files/colombia-peace-sky.jpg") no-repeat center top;
-  -webkit-background-size: 100% 100%;
-  -moz-background-size: 100% 100%;
-  -o-background-size: 100% 100%;
-  background-size: 100% 100%;}
+  }
 
 .header-top {background: #3781C5;}
 
