@@ -32,9 +32,9 @@
       </div>
     </figure>
     <div class="project-desc">
-      <h4 class="title"><?php print $fields['title']->content; ?></h4>
+      <h2 class="title"><?php print $fields['title']->content; ?></h2>
       <div class="project-body"><?php print $fields['body']->content; ?></div>
-      <div class="project-more"><a href="<?php print isset($fields['path']) ? $fields['path']->content : '#'; ?>">Learn more</a></div>
+      <div class="project-more"><a href="<?php print isset($fields['path']) ? $fields['path']->content : '#'; ?>"><?php print t('Learn more'); ?></a></div>
     </div>
   </div>
 </div>

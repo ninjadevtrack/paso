@@ -279,9 +279,13 @@ footer h3 {
   width: 100%;
 }
 .view-id-resources .project-desc,
-.view-id-proyectos .project-desc,
-.view-id-partnerships .project-desc {
+.view-id-proyectos .project-desc {
   padding: 15px 20px;
+  min-height: 75px;
+  text-align: left;
+}
+.view-id-partnerships .project-desc {
+  padding: 0 20px;
   min-height: 75px;
   text-align: left;
 }
