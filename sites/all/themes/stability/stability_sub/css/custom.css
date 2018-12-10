@@ -11,7 +11,7 @@ h2, .h2 {
 .header-top {background: #3781C5;}
 
 footer.nd-region {
-  background: #2e7ec7;
+  background: #9c9c9c;
   color: #ffffff;
   padding-bottom: 10px !important;
   padding-top: 35px;
@@ -24,6 +24,7 @@ footer.nd-region {
     font-size: 11px;
     padding: 20px 0;
     color: #E2E2E2;
+    text-align: center;
     font-style: italic;
 }
 
@@ -204,18 +205,20 @@ footer .contacts-widget .contacts-info-list > li a:hover
 }
 .social-links-footer .social-links-wrapper {
     padding-top: 10px;
-
-
+}
 }
 
+footer .widget .title > a {
+  color: white;
 }
+
 @media (min-width: 768px) {
     .social-links-footer .social-links-wrapper {
         padding-top: 0;
     }
 }
 .social-links-footer {
-    background: #2e7ec7;
+    background: #9c9c9c;
     color: #ffffff;
     padding-bottom: 14px !important;
     font-size: 13px;
@@ -338,4 +341,39 @@ body.node-type-blog .main #content > ul.links.inline {
 }
 .node-projects-new .tab-content .embed-responsive.embed-responsive-4by3 {
   height: 1410px;
+}
+
+.subcribe-info {
+    color: #fff;
+    float: left;
+    width: 30%;
+    text-align: left;
+    font-style: italic;
+    line-height: 17px;
+    padding-top: 10px;
+}
+.subcribe-form {
+    float: left;
+    margin-left: 25px;
+}
+.subcribe-email {
+    margin-top: 8px;
+    margin-bottom: 4px;
+    border: 1px solid #999;
+    padding: 3px;
+    color: #000000;
+    font-style: italic;
+    width: 130px;
+    padding-left: 10px;
+}
+.subcribe-submit {
+    margin-top: 8px;
+    border: 1px solid #999;
+    padding: 3px 7px;
+    font-size: 13px;
+    color: #dfbd86;
+    background-color: #a17a39;
+}
+.site-name {
+  font-weight: bold;
 }

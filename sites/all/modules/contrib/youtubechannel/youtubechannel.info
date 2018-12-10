@@ -1,0 +1,14 @@
+name = Youtube Channel
+description = Shows the list of youtube videos from a Youtube Channel.
+core = 7.x
+configure = admin/config/services/youtubechannel
+files[] = youtubechannel.admin.inc
+files[] = youtubechannel.module
+files[] = youtubechannel_videos.tpl.php
+
+; Information added by Drupal.org packaging script on 2017-11-27
+version = "7.x-2.2"
+core = "7.x"
+project = "youtubechannel"
+datestamp = "1511767389"
+

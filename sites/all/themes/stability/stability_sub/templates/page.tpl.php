@@ -149,18 +149,23 @@ $page['content']['#prefix'] = $messages . $tabs;
     <div class="footer-copyright">
       <div class="container">
         <div class="row">
-          <div class="col-sm-6 col-md-4 moveleft">
-            <div><img style="float: left; padding-left: 5px; margin-right: 12px;" src="/sites/default/files/peace-organization.jpg" alt="Peace Foundation"></div>
-           <div style="padding-top: 28px; line-height: 15px;"> <?php if(theme_get_setting('copyright')) {
-              print theme_get_setting('copyright');
-            }
-            else {
-              print t('Copyright') . ' &copy; '. date('Y'); ?>  <a href="#"><?php print strtoupper(variable_get('site_name', 'STABILITY')); ?></a> &nbsp;| &nbsp; <?php print t('All Rights Reserved');
-            }; ?>
-            </div>
+          <div class="col-sm-6 col-md-5 moveleft">
+            <div><img style="float: left; padding-left: 5px; margin-right: 12px;" src="<?php print base_path() . path_to_theme('stability_sub'); ?>/images/peace-organization.png" alt="Peace Foundation"></div>
+            <div style="margin-top: 20px; width: 426px; margin-left: -81px; text-align: left;"><span class="site-name">Paso Colombia</span> is a program of<br /> the <a href="http://oneearthfuture.org/">One Earth Future Foundation</a></div>
           </div>
-			
-			<div style="padding-top: 26px; line-height: 16px;"><a href="http://oneearthfuture.org/legal/rte" target="_blank">Solicitud de permanencia de OEF en el<br />Régimen Tributatio Especial Colombiano</a>.</div>
+          <div class="col-sm-6 col-md-7">
+            <form action="https://oneearthfuture.us17.list-manage.com/subscribe/post?u=160b567aa339772013936e68d&amp;id=49678edcaa" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+              <div class="subcribe">
+                <div class="subcribe-info">Subscribe to the One Earth Future Quarterly Newsletter for updates on <span class="site-name">Paso Colombia</span> and other One Earth Future programming.</div>
+                <div class="subcribe-form">
+                  <input type="email"  class="subcribe-email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="Enter Email Address" required>
+                  <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+                  <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_160b567aa339772013936e68d_49678edcaa" tabindex="-1" value=""></div>
+                  <div class="clear"><input class="subcribe-submit" type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe"></div>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

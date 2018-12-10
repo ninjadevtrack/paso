@@ -7,4 +7,8 @@
         autoPlayTimeout: 5000,
         autoPlayHoverPause: true
     });
+
+  if($('body.node-type-blog .main #content > article.entry__video').length > 0 ) {
+    $('body.node-type-blog .main #content > ul.links.inline').css('margin','0');
+  }
 })(jQuery);
