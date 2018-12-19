@@ -222,6 +222,7 @@ footer .widget .title > a {
     color: #ffffff;
     padding-bottom: 14px !important;
     font-size: 13px;
+    margin: -100px 0 39px 0;
 }
 .social-links > li > a:hover {
   background: rgba(255, 255, 255, 0.05);
