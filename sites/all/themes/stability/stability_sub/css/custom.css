@@ -383,8 +383,11 @@ body.node-type-blog .main #content > ul.links.inline {
   font-family: 'Oswald', sans-serif;
   font-size: 16px;
 }
-#views-news-block_4 {
-  margin-top: -532px;
+@media (min-width: 992px) {
+  #views-news-block_4 {
+    margin-top: -532px;
+  }
+
 }
 .featured-videos .alignnone img {
   margin: 0;
