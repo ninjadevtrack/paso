@@ -15,7 +15,7 @@ footer.nd-region {
   color: #ffffff;
   padding-bottom: 10px !important;
   padding-top: 35px;
-  border-top: 2px solid #fbb516;
+  /*border-top: 2px solid #fbb516;*/
 }
 
 .footer-copyright {
@@ -377,4 +377,21 @@ body.node-type-blog .main #content > ul.links.inline {
 }
 .site-name {
   font-weight: bold;
+}
+
+.section-latest-news .project-item .project-desc .title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+}
+#views-news-block_4 {
+  margin-top: -532px;
+}
+.featured-videos .alignnone img {
+  margin: 0;
+}
+.featured-videos {
+  background: #558DCA;
+}
+.featured-videos .project-item .project-item-inner {
+  background: none;
 }
