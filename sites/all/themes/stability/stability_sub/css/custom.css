@@ -401,3 +401,10 @@ body.node-type-blog .main #content > ul.links.inline {
 .featured-videos .project-desc .title > a:hover {
   color: #000000;
 }
+.block-center {
+  text-align: center;
+}
+.view-display-id-block_4 .project-item .dlink,
+.view-display-id-block_4 .project-item .zoom{
+  width: 100%
+}
