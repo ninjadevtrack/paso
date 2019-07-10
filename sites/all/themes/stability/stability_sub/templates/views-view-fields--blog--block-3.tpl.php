@@ -38,6 +38,4 @@ $img = isset($fields['field_images'])?$fields['field_images']->content:$fields['
       <h4 class="title"><?php print $fields['title']->content; ?></h4>
     </div>
   </div>
-  <div class="project-date"><?php print $fields['created']->content;?></div>
-  <div class="project-sum"><?php print $fields['body']->content;?></div>
 </div>
