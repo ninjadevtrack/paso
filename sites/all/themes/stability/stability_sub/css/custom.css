@@ -398,3 +398,6 @@ body.node-type-blog .main #content > ul.links.inline {
 .featured-videos .project-item .project-item-inner {
   background: none;
 }
+.featured-videos .project-desc .title > a:hover {
+  color: #000000;
+}
