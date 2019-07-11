@@ -159,7 +159,7 @@ footer .contacts-widget .contacts-info-list > li a:hover
   color: #D79D2F;
 }
 .section-latest-news {
-  padding-top: 22px;
+  padding-top: 12px;
   padding-bottom: 43px;
 }
 .section-latest-news .project-item-inner {
@@ -385,7 +385,8 @@ body.node-type-blog .main #content > ul.links.inline {
 }
 @media (min-width: 992px) {
   #views-news-block_4 {
-    margin-top: -532px;
+    margin-top: -495px;
+	background-color: #ececec;
   }
 
 }
