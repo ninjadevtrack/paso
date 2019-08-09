@@ -409,3 +409,8 @@ body.node-type-blog .main #content > ul.links.inline {
 .view-display-id-block_4 .project-item .zoom{
   width: 100%
 }
+.post-date {
+  font-style: italic;
+  font-size: 12px;
+  color: #c0c0c0;
+}
