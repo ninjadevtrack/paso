@@ -92,7 +92,7 @@ foreach($fields as $field) {
       <cite><?php print $title; ?></cite>
     </div>
   <?php endif; ?>
-
+  <div class="post-date"><?php print format_date($created, 'custom', 'M d, Y'); ?></div>
   <header class="entry-header">
     <?php print $field_blog_type[0]['value'] != 'Quote' ? '<h2>' . $title . '</h2>' : ''; ?>
 
