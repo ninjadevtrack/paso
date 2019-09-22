@@ -1,346 +1,349 @@
+// var map = new Datamap({
+//   element: document.getElementById('oefmap'),
+//   projection: 'mercator',
+//   fills: {
+//     defaultFill: '#e5e5e4'
+//   },
+//   geographyConfig: {
+//     popupOnHover: true,
+//     popupTemplate: function(d) {
+      
+//     },
+//     borderColor: 'white',
+//     borderWidth: 0.5,
+//     highlightFillColor: '#aa2d2f',
+//     highlightBorderColor: '#1a1e24',
+//     highlightBorderWidth: 2,
+//   }
+// });
+
 var themeURL = '/sites/all/themes/stability/stability_sub/';
-var data_country = [];
-var top5mData = [];
-var top5yData = [];
-var t5mData = [];
-var t5yData = [];
+var __spots = [];
 
-
-var months    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-var d = new Date();
-var y = d.getFullYear();
-var m = d.getMonth();
-var thisMonth = months[m];
-
-// set the dimensions and margins of the graph
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 330 - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom;
-// append the svg object to the body of the page
-// append a 'group' element to 'svg'
-// moves the 'group' element to the top left margin
-var svg1 = d3.select(".chart-top-5m").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-
-var svg2 = d3.select(".chart-top-5y").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-// append the svg obgect to the body of the page
-// appends a 'group' element to 'svg'
-// moves the 'group' element to the top left margin
-var svg3 = d3.select('.chart-risk-ot').append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-
-
-d3.csv(themeURL + 'data/dashboard_coupcast_data_2018_2019.csv', function(data) {
-  data_country.push(data);
-  console.log("data: ", data);
-  top5mData = getTop5Months(parseInt(m), y, data);
-  top5yData = getTop5Years(parseInt(y) - 1, data);
-  console.log(top5yData);
-  function compare( a, b ) {
-    if ( a.month_risk < b.month_risk ){
-      return -1;
-    }
-    if ( a.month_risk > b.month_risk ){
-      return 1;
-    }
-    return 0;
-  }
-  function compare2( a, b ) {
-    if ( a.annual_risk < b.annual_risk ){
-      return -1;
-    }
-    if ( a.annual_risk > b.annual_risk ){
-      return 1;
-    }
-    return 0;
-  }
-
-  top5mData.sort( compare );
-  top5mData = top5mData.slice(Math.max(top5mData.length - 5, 1))
-  console.log("top5m: ", top5mData);
-
-  top5yData.sort( compare2 );
-  top5yData = top5yData.slice(Math.max(top5mData.length - 5, 1))
-  console.log("top5yData: ", top5yData)
-  var ti = 1;
-  var top5yCountries = [top5yData[top5yData.length - 1].country_name];
-  var t5yData = [{"name":top5yData[top5yData.length - 1].country_name,"value":top5yData[top5yData.length - 1].annual_risk}];
-  while (ti < 5) {
-    for (var iii = top5yData.length - 2; iii >= 0; iii--) {
-      if (!top5yCountries.includes(top5yData[iii].country_name)) {
-        top5yCountries.push(top5yData[iii].country_name);
-        t5yData.push({"name":top5yData[iii].country_name,"value":top5yData[iii].annual_risk})
-        ti++;
-        break;
-      }
-    }
-  }
-  console.log("top5y: ", t5yData);
-
-  // change top 3 countries
-  var top3countries = '';
-  for (var i3 = 0; i3 < 3; i3++) {
-    top3countries += t5yData[i3].name + ' ' + parseFloat(parseFloat(t5yData[i3].value) * 100).toFixed(2) + '%, ';
-  }
-  top3countries += '...';
-  jQuery('.data-latest').html(top3countries);
-
-  var t5mData = [];
-  for (var ii = top5mData.length - 1; ii >= 0; ii--) {
-    t5mData.push({"name":top5mData[ii].country_name,"value":top5mData[ii].month_risk});
-  }
-  console.log("t5m: ", t5mData);
-
-  //console.log(data_country);
-
-  var agg10years = [{date: '2009', close: 0.016104571874999994},
-                    {date: '2010', close: 0.012226371874999998},
-                    {date: '2011', close: 0.012977773056994817},
-                    {date: '2012', close: 0.014542852577319585},
-                    {date: '2013', close: 0.013428764948453607},
-                    {date: '2014', close: 0.014668596391752572},
-                    {date: '2015', close: 0.01497165257731959},
-                    {date: '2016', close: 0.012793457731958764},
-                    {date: '2017', close: 0.012115702577319587},
-                    {date: '2018', close: 0.01320047692307693}]
-
-  buildBarChart(t5mData, svg1, width, height);
-  buildBarChart(t5yData, svg2, width, height);
-  buildLineChart(agg10years, svg3, width, height);
-});
-
-
-
-function getCountryInfo(country_name, month, year, data) {
-  var thisYear = [];
-  for(var i=0; i<data.length; i++) {
-      if(data[i]["country_name"] == country_name && data[i]["year"] == year && data[i]["month"] == month) {
-        thisYear.push(data[i]);
-    }
-  }
-  return thisYear;
-
-}
-
-function getTop5Months(month, year, data) {
-  var list = [];
-  for(var i=0; i<data.length; i++) {
-      if(data[i]["year"] == year && data[i]["month"] == month) {
-        list.push(data[i]);
-    }
-  }
-  return list;
-}
-
-function getTop5Years(year, data) {
-  var list = [];
-  for(var i=0; i<data.length; i++) {
-      if(data[i]["year"] == year) {
-        list.push(data[i]);
-    }
-  }
-  return list;
-}
-
-var map = new Datamap({
-  element: document.getElementById('oefmap'),
-  projection: 'mercator',
-  fills: {
-    defaultFill: '#e5e5e4'
-  },
-  geographyConfig: {
-    popupOnHover: true,
-    popupTemplate: function(d) {
-      var name = d.properties.name;
-      console.log(name)
-      if(name == 'United States') {
-        name = d.properties.iso;
-      } else if(name == 'United Kingdom') {
-        name = 'UKG';
-      } else if(name == 'Russian Federation') {
-        name = 'Russia';
-      } else if(name == 'Viet Nam') {
-        name = 'Vietnam';
-      } else if(name == 'Lao People\'s Democratic Republic') {
-        name = 'Laos';
-      } else if(name == 'Dominican Republic') {
-        name = 'Dominican Rep';
-      } else if(name == 'Venezuela, Bolivarian Republic of') {
-        name = 'Venezuela';
-      } else if(name == 'Bolivia, Plurinational State of') {
-        name = 'Bolivia';
-      } else if(name == 'Congo') {
-        name = 'Congo-Brz';
-      } else if(name == 'Congo, the Democratic Republic of the') {
-        name = 'Congo/Zaire';
-      } else if(name == 'Central African Republic') {
-        name = 'Cen African Rep';
-      }
-
-
-      var thisYear = getCountryInfo(name, parseInt(m), y, data_country[0]);
-      var tooltipHTML = '<div class="tooltip-info-new">';
-      tooltipHTML = tooltipHTML + '<div class="tt-country">'+thisYear[0].country_name+'</div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-space"></div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info">Risk of Coup Attempt</div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-row tt-info-1">';
-          tooltipHTML = tooltipHTML + '<div class="tt-info-index">'+thisYear[0].year+': &nbsp</div> <div class="tt-info-value">' + parseFloat(parseFloat(thisYear[0].annual_risk) * 100).toFixed(2) +'%</div>';
-      tooltipHTML = tooltipHTML + '</div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-space"></div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-row tt-info-2">';
-          tooltipHTML = tooltipHTML + '<div class="tt-info-index">'+thisMonth+' of '+y+': &nbsp</div> <div class="tt-info-value">'+parseFloat(parseFloat(thisYear[0].month_risk) * 100).toFixed(2)+'%</div>';
-      tooltipHTML = tooltipHTML + '</div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-space"></div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-row tt-info-3">';
-          tooltipHTML = tooltipHTML + '<div class="tt-info-index">Regime type: &nbsp</div> <div class="tt-info-value">'+thisYear[0].regime_type+'</div>';
-      tooltipHTML = tooltipHTML + '</div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-space"></div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-row tt-info-4">';
-          tooltipHTML = tooltipHTML + '<div class="tt-info-index">Current leader: &nbsp</div> <div class="tt-info-value">'+thisYear[0].leader_name+'</div>';
-      tooltipHTML = tooltipHTML + '</div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-space"></div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-row tt-info-5">';
-          tooltipHTML = tooltipHTML + '<div class="tt-info-index">Leader tenure: &nbsp</div> <div class="tt-info-value">'+thisYear[0].leader_years+' years</div>';
-      tooltipHTML = tooltipHTML + '</div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-space"></div>';
-      tooltipHTML = tooltipHTML + '<div class="tt-info-row tt-info-6">';
-          tooltipHTML = tooltipHTML + '<div class="tt-info-index">Regime length: &nbsp</div> <div class="tt-info-value">'+thisYear[0].regime_years+' years</div>';
-      tooltipHTML = tooltipHTML + '</div>';
-      tooltipHTML = tooltipHTML + '</div>';
-      return tooltipHTML;
-    },
-    borderColor: 'white',
-    borderWidth: 0.5,
-    highlightFillColor: '#aa2d2f',
-    highlightBorderColor: '#1a1e24',
-    highlightBorderWidth: 2,
-  }
-});
-
-
-function buildLineChart(data, svg, width, height) {
-  // parse the date / time
-  var parseDate = d3.time.format("%Y");
-
-  // Set the ranges
-  var x = d3.time.scale().range([0, width]);
-  var y = d3.scale.linear().range([height, 0]);
-
-  // Define the axes
-var xAxis = d3.svg.axis().scale(x)
-  .orient("bottom").ticks(10);
-
-var yAxis = d3.svg.axis().scale(y)
-  .orient("left").ticks(5);
-
-// Define the line
-var valueline = d3.svg.line()
-  .x(function(d) { return x(d.date); })
-  .y(function(d) { return y(d.close); });
-
-  data.forEach(function(d) {
-    d.date = parseDate.parse(d.date);
-    d.close = +d.close;
+function Zoom(args) {
+  jQuery.extend(this, {
+    $buttons:   jQuery(".zoom-button"),
+    $info:      jQuery("#zoom-info"),
+    scale:      { max: 50, currentShift: 0 },
+    $container: args.$container,
+    datamap:    args.datamap
   });
 
-  // Scale the range of the data
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain([0, d3.max(data, function(d) { return d.close * 2; })]);
-
-  // Add the valueline path.
-  svg.append("path")
-    .attr("class", "line")
-    .attr("d", valueline(data));
-
-  // Add the X Axis
-  svg.append("g")
-    .attr("class", "x axis")
-    .attr("style", "font-size: 9px;")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
-
-  // Add the Y Axis
-  //svg.append("g")
-  //  .attr("class", "y axis")
-  //  .call(yAxis);
+  this.init();
 }
 
-function buildBarChart(data, svg, width, height) {
-  var x = d3.scale.linear()
-      .range([0, width])
-      .domain([0, d3.max(data, function (d) {
-          return d.value;
-      })]);
+Zoom.prototype.init = function() {
+  var paths = this.datamap.svg.selectAll("path"),
+      subunits = this.datamap.svg.selectAll(".datamaps-subunit");
 
-  var y = d3.scale.ordinal()
-      .rangeRoundBands([height, 0], .1)
-      .domain(data.map(function (d) {
-          return d.name;
-      }));
+  // preserve stroke thickness
+  paths.style("vector-effect", "non-scaling-stroke");
 
-  //make y axis to show bar names
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      //no tick marks
-      .tickSize(0)
-      .orient("left");
+  // disable click on drag end
+  subunits.call(
+    d3.behavior.drag().on("dragend", function() {
+      d3.event.sourceEvent.stopPropagation();
+    })
+  );
 
-  //var gy = svg.append("g")
-  //    .attr("class", "y axis")
-  //    .call(yAxis)
+  this.scale.set = this._getScalesArray();
+  this.d3Zoom = d3.behavior.zoom().scaleExtent([ 1, this.scale.max ]);
 
-  var bars = svg.selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("g")
+  this._displayPercentage(1);
+  this.listen();
+};
 
-  var colors = ['#805f85', '#9abc51', '#0cc0aa', '#f9963c', '#45acc7'];
-  //append rects
-  bars.append("rect")
-      .attr("class", "bar")
-      .attr("y", function (d) {
-          return y(d.name);
-      })
-      .attr("height", y.rangeBand())
-      .attr("x", 0)
-      .attr("width", function (d) {
-          return x(d.value);
-      })
-      .attr('fill', function(d){
-        c = colors[0];
-        colors.shift();
-        return c;
-      });
+Zoom.prototype.listen = function() {
+  this.$buttons.off("click").on("click", this._handleClick.bind(this));
 
-  //add a value label to the right of each bar
-  bars.append("text")
-      .attr("class", "label")
-      //y position of the label is halfway down the bar
-      .attr("y", function (d) {
-          return y(d.name) + y.rangeBand() / 2 + 4;
-      })
-      //x position is 3 pixels to the right of the bar
-      .attr("x", function (d) {
-          return (x(d.value) - this.getBoundingClientRect().width - 20) / 2;
-      })
-      .text(function (d) {
-          return d.name;
-      })
-      .attr('fill', 'black');
+  this.datamap.svg
+    .call(this.d3Zoom.on("zoom", this._handleScroll.bind(this)))
+    .on("dblclick.zoom", null); // disable zoom on double-click
+};
 
+Zoom.prototype.reset = function() {
+  this._shift("reset");
+};
+
+Zoom.prototype._handleScroll = function() {
+  var translate = d3.event.translate,
+      scale = d3.event.scale,
+      limited = this._bound(translate, scale);
+
+  this.scrolled = true;
+
+  this._update(limited.translate, limited.scale);
+};
+
+Zoom.prototype._handleClick = function(event) {
+  var direction = $(event.target).data("zoom");
+
+  this._shift(direction);
+};
+
+Zoom.prototype._shift = function(direction) {
+  var center = [ this.$container.width() / 2, this.$container.height() / 2 ],
+      translate = this.d3Zoom.translate(), translate0 = [], l = [],
+      view = {
+        x: translate[0],
+        y: translate[1],
+        k: this.d3Zoom.scale()
+      }, bounded;
+
+  translate0 = [
+    (center[0] - view.x) / view.k,
+    (center[1] - view.y) / view.k
+  ];
+
+	if (direction == "reset") {
+  	view.k = 1;
+    this.scrolled = true;
+  } else {
+  	view.k = this._getNextScale(direction);
+  }
+
+  l = [ translate0[0] * view.k + view.x, translate0[1] * view.k + view.y ];
+
+  view.x += center[0] - l[0];
+  view.y += center[1] - l[1];
+
+  bounded = this._bound([ view.x, view.y ], view.k);
+
+  this._animate(bounded.translate, bounded.scale);
+};
+
+Zoom.prototype._bound = function(translate, scale) {
+  var width = this.$container.width(),
+      height = this.$container.height();
+
+  translate[0] = Math.min(
+    (width / height)  * (scale - 1),
+    Math.max( width * (1 - scale), translate[0] )
+  );
+
+  translate[1] = Math.min(0, Math.max(height * (1 - scale), translate[1]));
+
+  return { translate: translate, scale: scale };
+};
+
+Zoom.prototype._update = function(translate, scale) {
+  this.d3Zoom
+    .translate(translate)
+    .scale(scale);
+
+  this.datamap.svg.selectAll("g")
+    .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+  this._displayPercentage(scale);
+};
+
+Zoom.prototype._animate = function(translate, scale) {
+  var _this = this,
+      d3Zoom = this.d3Zoom;
+
+  d3.transition().duration(350).tween("zoom", function() {
+    var iTranslate = d3.interpolate(d3Zoom.translate(), translate),
+        iScale = d3.interpolate(d3Zoom.scale(), scale);
+
+		return function(t) {
+      _this._update(iTranslate(t), iScale(t));
+    };
+  });
+};
+
+Zoom.prototype._displayPercentage = function(scale) {
+  var value;
+
+  value = Math.round(Math.log(scale) / Math.log(this.scale.max) * 100);
+  this.$info.text(value + "%");
+};
+
+Zoom.prototype._getScalesArray = function() {
+  var array = [],
+      scaleMaxLog = Math.log(this.scale.max);
+
+  for (var i = 0; i <= 10; i++) {
+    array.push(Math.pow(Math.E, 0.1 * i * scaleMaxLog));
+  }
+
+  return array;
+};
+
+Zoom.prototype._getNextScale = function(direction) {
+  var scaleSet = this.scale.set,
+      currentScale = this.d3Zoom.scale(),
+      lastShift = scaleSet.length - 1,
+      shift, temp = [];
+
+  if (this.scrolled) {
+
+    for (shift = 0; shift <= lastShift; shift++) {
+      temp.push(Math.abs(scaleSet[shift] - currentScale));
+    }
+
+    shift = temp.indexOf(Math.min.apply(null, temp));
+
+    if (currentScale >= scaleSet[shift] && shift < lastShift) {
+      shift++;
+    }
+
+    if (direction == "out" && shift > 0) {
+      shift--;
+    }
+
+    this.scrolled = false;
+
+  } else {
+
+    shift = this.scale.currentShift;
+
+    if (direction == "out") {
+      shift > 0 && shift--;
+    } else {
+      shift < lastShift && shift++;
+    }
+  }
+
+  this.scale.currentShift = shift;
+
+  return scaleSet[shift];
+};
+
+var pasoContainer = `
+  <
+`;
+
+function Pasomap() {
+  this.$container = jQuery("#pasomap");
+  this.pasoData = [];
+  this.instance = new Datamap({
+    scope: 'world',
+    element: this.$container.get(0),
+    done: this._handleMapReady.bind(this),
+    geographyConfig: {
+      // dataUrl: "https://github.com/deldersveld/topojson/blob/master/countries/colombia/colombia-departments.json",
+      popupOnHover: true,
+      highlightOnHover: true,
+      borderColor: '#444',
+      borderWidth: 0.5,
+    },
+    fills: {
+      'COL': '#9467bd',
+      'MAJOR': '#306596',
+      'MEDIUM': '#0fa0fa',
+      'MINOR': '#bada55',
+      defaultFill: '#dddddd'
+    },
+    data: {
+      'JH': { fillKey: 'MINOR' },
+      'MH': { fillKey: 'MINOR' },
+      'COL': { fillKey: 'COL' },
+    },
+    setProjection: function (element) {
+      console.log(element)
+      var projection = d3.geo.mercator()
+        .center([-74.297333, 4.570868]) // LNG, LAT
+        .scale(1200)
+        .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+  
+      var path = d3.geo.path().projection(projection);
+      return { path: path, projection: projection };
+    },
+  });
 }
 
+Pasomap.prototype._handleMapReady = function(datamap) {
+  this.zoom = new Zoom({
+  	$container: this.$container,
+  	datamap: datamap
+  });
+}
 
+var pasoMap = new Pasomap();
+
+d3.csv(themeURL + 'data/demography.csv', function(data) {
+  pasoMap.pasoData["demography"] = data;
+
+  pasoMap.pasoData["demography"].forEach((value, index) => {
+    __spots.push({
+      name: '',
+      radius: 10,
+      fillKey: 'MINOR',
+      latitude: parseFloat(value.LT),
+      longitude: parseFloat(value.LN)
+    });
+  });
+
+  console.log(__spots);
+  pasoMap.instance.bubbles(__spots, {
+    popupTemplate: function (geo, data) {
+      return ['<div class="hoverinfo">' +  data.name,
+      '<br/>Country: ' +  data.radius + '',
+      '<br/>Date: ' +  data.latitude + '',
+      '<br/>Date: ' +  data.longitude + '',
+      '</div>'].join('');
+    }
+  });
+});
+
+// var themeURL = '/sites/all/themes/stability/stability_sub/';
+// var pasoData = [];
+// var __spots = [];
+
+
+// var pasoMap = new Datamap({
+//   element: document.getElementById('oefmap'),
+//   scope: 'world',
+//   geographyConfig: {
+//       // dataUrl: "https://github.com/deldersveld/topojson/blob/master/countries/colombia/colombia-departments.json",
+//       popupOnHover: true,
+//       highlightOnHover: true,
+//       borderColor: '#444',
+//       borderWidth: 0.5,
+//   },
+//   fills: {
+//     'MAJOR': '#306596',
+//     'MEDIUM': '#0fa0fa',
+//     'MINOR': '#bada55',
+//     defaultFill: '#dddddd'
+//   },
+//   data: {
+//     'JH': { fillKey: 'MINOR' },
+//     'MH': { fillKey: 'MINOR' }
+//   },
+//   setProjection: function (element) {
+//     console.log(element)
+//     var projection = d3.geo.mercator()
+//       .center([-72.95439, 10.32572]) // LNG, LAT
+//       .scale(1200)
+//       // .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+
+//     var path = d3.geo.path().projection(projection);
+//     return { path: path, projection: projection };
+//   },
+// });
+
+// d3.csv(themeURL + 'data/demography.csv', function(data) {
+//   pasoData["demography"] = data;
+
+//   pasoData["demography"].forEach((value, index) => {
+//     __spots.push({
+//       name: '',
+//       radius: 10,
+//       fillKey: 'MINOR',
+//       latitude: parseFloat(value.LT),
+//       longitude: parseFloat(value.LN)
+//     });
+//   });
+
+//   console.log(__spots);
+//   pasoMap.bubbles(__spots, {
+//     popupTemplate: function (geo, data) {
+//       return ['<div class="hoverinfo">' +  data.name,
+//       '<br/>Payload: ' +  data.yield + ' kilotons',
+//       '<br/>Country: ' +  data.country + '',
+//       '<br/>Date: ' +  data.date + '',
+//       '</div>'].join('');
+//     }
+//   });
+// });
