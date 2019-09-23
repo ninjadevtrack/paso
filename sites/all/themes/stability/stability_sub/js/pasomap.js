@@ -213,13 +213,41 @@ var pasoContainer = `
   <
 `;
 
+function rescaleWorld(datamap) {
+  datamap.svg
+    .selectAll('g')
+    .attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')');
+}
+
+function rescaleBubbles(datamap) {
+  var bubbleRadius = 4;
+  var bubbleBorder = 15;
+
+  datamap.svg
+    .selectAll('.datamaps-bubble')
+    .attr('r', bubbleRadius / d3.event.scale)
+    .style('stroke-width', (bubbleBorder / d3.event.scale) + 'px');
+}
+
 function Pasomap() {
   this.$container = jQuery("#pasomap");
   this.pasoData = [];
   this.instance = new Datamap({
     scope: 'world',
     element: this.$container.get(0),
-    done: this._handleMapReady.bind(this),
+    // done: this._handleMapReady.bind(this),
+    done: function(datamap) {
+      datamap.svg.call(d3.behavior.zoom().on('zoom', redraw));
+  
+      function redraw() {
+        datamap.svg.select('g')
+          .selectAll('path')
+          .style('vector-effect', 'non-scaling-stroke');
+  
+        rescaleWorld(datamap);
+        rescaleBubbles(datamap);
+      }
+    },
     geographyConfig: {
       // dataUrl: "https://github.com/deldersveld/topojson/blob/master/countries/colombia/colombia-departments.json",
       popupOnHover: true,
