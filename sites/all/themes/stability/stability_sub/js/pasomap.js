@@ -1,21 +1,4 @@
-// var map = new Datamap({
-//   element: document.getElementById('oefmap'),
-//   projection: 'mercator',
-//   fills: {
-//     defaultFill: '#e5e5e4'
-//   },
-//   geographyConfig: {
-//     popupOnHover: true,
-//     popupTemplate: function(d) {
-      
-//     },
-//     borderColor: 'white',
-//     borderWidth: 0.5,
-//     highlightFillColor: '#aa2d2f',
-//     highlightBorderColor: '#1a1e24',
-//     highlightBorderWidth: 2,
-//   }
-// });
+
 
 var themeURL = '/sites/all/themes/stability/stability_sub/';
 var __spots = [];
@@ -220,158 +203,178 @@ function rescaleWorld(datamap) {
 }
 
 function rescaleBubbles(datamap) {
-  var bubbleRadius = 4;
-  var bubbleBorder = 15;
-
+  var bubbleRadius = 11;
+  var bubbleBorder = 1;
   datamap.svg
     .selectAll('.datamaps-bubble')
     .attr('r', bubbleRadius / d3.event.scale)
     .style('stroke-width', (bubbleBorder / d3.event.scale) + 'px');
 }
 
-function Pasomap() {
-  this.$container = jQuery("#pasomap");
-  this.pasoData = [];
-  this.instance = new Datamap({
-    scope: 'world',
-    element: this.$container.get(0),
-    // done: this._handleMapReady.bind(this),
-    done: function(datamap) {
-      datamap.svg.call(d3.behavior.zoom().on('zoom', redraw));
-  
-      function redraw() {
-        datamap.svg.select('g')
-          .selectAll('path')
-          .style('vector-effect', 'non-scaling-stroke');
-  
-        rescaleWorld(datamap);
-        rescaleBubbles(datamap);
-      }
-    },
-    geographyConfig: {
-      // dataUrl: "https://github.com/deldersveld/topojson/blob/master/countries/colombia/colombia-departments.json",
-      popupOnHover: true,
-      highlightOnHover: true,
-      borderColor: '#444',
-      borderWidth: 0.5,
-    },
-    fills: {
-      'COL': '#9467bd',
-      'MAJOR': '#306596',
-      'MEDIUM': '#0fa0fa',
-      'MINOR': '#bada55',
-      defaultFill: '#dddddd'
-    },
-    data: {
-      'JH': { fillKey: 'MINOR' },
-      'MH': { fillKey: 'MINOR' },
-      'COL': { fillKey: 'COL' },
-    },
-    setProjection: function (element) {
-      console.log(element)
-      var projection = d3.geo.mercator()
-        .center([-74.297333, 4.570868]) // LNG, LAT
-        .scale(1200)
-        .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
-  
-      var path = d3.geo.path().projection(projection);
-      return { path: path, projection: projection };
-    },
-  });
-}
+// d3 code
 
-Pasomap.prototype._handleMapReady = function(datamap) {
-  this.zoom = new Zoom({
-  	$container: this.$container,
-  	datamap: datamap
-  });
-}
+const $container = jQuery("#pasomap");
+let width = $container.width(), height = $container.height();
+const showlayers = false;
+const transform = d3.zoomIdentity.translate(width >> 1, height >> 1).scale(1 << 12);
+const deltas = [-100, -4, -1, 0];
+const url = (x, y, z) => `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/${z}/${x}/${y}${devicePixelRatio > 1 ? "@2x" : ""}?access_token=pk.eyJ1IjoidG1jdyIsImEiOiJjamN0Z3ZiOXEwanZkMnh2dGFuemkzemE3In0.gibebYiJ5TEdXvwjpCY0jg`;
 
-var pasoMap = new Pasomap();
+const raster_map = function() {
+  const svg = d3.create("svg")
+      .attr("viewBox", [0, 0, width, height]);
 
-d3.csv(themeURL + 'data/demography.csv', function(data) {
-  pasoMap.pasoData["demography"] = data;
+  const tile = d3.tile()
+      .extent([[0, 0], [width, height]])
+      .tileSize(512)
+      .clampX(false);
 
-  pasoMap.pasoData["demography"].forEach((value, index) => {
-    __spots.push({
-      name: '',
-      radius: 10,
-      fillKey: 'MINOR',
-      latitude: parseFloat(value.LT),
-      longitude: parseFloat(value.LN)
+  const zoom = d3.zoom()
+      .scaleExtent([1 << 8, 1 << 22])
+      .extent([[0, 0], [width, height]])
+      .on("zoom", () => zoomed(d3.event.transform));
+
+  const levels = svg.append("g")
+      .attr("pointer-events", "none")
+      .selectAll("g")
+      .data(deltas)
+      .join("g")
+      .style("opacity", showlayers ? 0.3 : null);
+
+  svg
+      .call(zoom)
+      .call(zoom.transform, transform);
+
+  function zoomed(transform) {
+    levels.each(function(delta) {
+      const tiles = tile.zoomDelta(delta)(transform);
+
+      d3.select(this)
+        .selectAll("image")
+        .data(tiles, d => d)
+        .join("image")
+          .attr("xlink:href", d => url(...d3.tileWrap(d)))
+          .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
+          .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
+          .attr("width", tiles.scale)
+          .attr("height", tiles.scale);
     });
-  });
+  }
+  
+  return svg.node();
+}
 
-  console.log(__spots);
-  pasoMap.instance.bubbles(__spots, {
-    popupTemplate: function (geo, data) {
-      return ['<div class="hoverinfo">' +  data.name,
-      '<br/>Country: ' +  data.radius + '',
-      '<br/>Date: ' +  data.latitude + '',
-      '<br/>Date: ' +  data.longitude + '',
-      '</div>'].join('');
-    }
-  });
-});
-
-// var themeURL = '/sites/all/themes/stability/stability_sub/';
-// var pasoData = [];
-// var __spots = [];
+let map = raster_map();
+$container.append(map);
 
 
-// var pasoMap = new Datamap({
-//   element: document.getElementById('oefmap'),
-//   scope: 'world',
-//   geographyConfig: {
-//       // dataUrl: "https://github.com/deldersveld/topojson/blob/master/countries/colombia/colombia-departments.json",
+
+
+
+
+
+// function Pasomap() {
+  
+//   this.$container = jQuery("#pasomap");
+//   this.pasoData = [];
+//   this.instance = new Datamap({
+//     scope: 'world',
+//     element: this.$container.get(0),
+//     done: this._handleMapReady.bind(this),
+//     done: function(datamap) {
+//       datamap.svg.call(d3.behavior.zoom().on('zoom', redraw));
+  
+//       function redraw() {
+//         datamap.svg.select('g')
+//           .selectAll('path')
+//           .style('vector-effect', 'non-scaling-stroke');
+  
+//         rescaleWorld(datamap);
+//         rescaleBubbles(datamap);
+//       }
+//     },
+//     geographyConfig: {
+//       dataUrl: "colombia-departments.json",
 //       popupOnHover: true,
-//       highlightOnHover: true,
+//       highlightOnHover: false,
 //       borderColor: '#444',
 //       borderWidth: 0.5,
-//   },
-//   fills: {
-//     'MAJOR': '#306596',
-//     'MEDIUM': '#0fa0fa',
-//     'MINOR': '#bada55',
-//     defaultFill: '#dddddd'
-//   },
-//   data: {
-//     'JH': { fillKey: 'MINOR' },
-//     'MH': { fillKey: 'MINOR' }
-//   },
-//   setProjection: function (element) {
-//     console.log(element)
-//     var projection = d3.geo.mercator()
-//       .center([-72.95439, 10.32572]) // LNG, LAT
-//       .scale(1200)
-//       // .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+//       highlightBorderWidth: 2,
+//       dataUrl: themeURL + 'js/world-countries.json',
+//       // dataUrl: themeURL + 'js/colombia-departments.json',
+//     },
+//     bubblesConfig: {
+//       borderWidth: 1,
+//       borderOpacity: 1,
+//       borderColor: 'rgb(183, 115, 0)',
+//       popupOnHover: true, // True to show the popup while hovering
+//       radius: 11,
+//       fillOpacity: 1,
+//       animate: true,
+//       highlightOnHover: true,
+//       highlightFillColor: '#FC8D59',
+//       highlightBorderColor: 'rgba(250, 15, 160, 0.2)',
+//       highlightBorderWidth: 1,
+//       highlightBorderOpacity: 1,
+//       highlightFillOpacity: 0.85,
+//       exitDelay: 100, // Milliseconds
+//       key: JSON.stringify
+//     },
+//     fills: {
+//       'COL': '#efeeea',
+//       'MAJOR': '#306596',
+//       'MEDIUM': '#0fa0fa',
+//       'MINOR': 'rgba(246, 178, 26, 0.6)',
+//       defaultFill: '#f8f8f8'
+//     },
+//     data: {
+//       'JH': { fillKey: 'MINOR' },
+//       'MH': { fillKey: 'MINOR' },
+//       'COL': { fillKey: 'COL' },
+//     },
+//     setProjection: function (element) {
+//       console.log(element)
+//       var projection = d3.geo.mercator()
+//         .center([-74.297333, 4.570868]) // LNG, LAT
+//         .scale(1300)
+//         .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+  
+//       var path = d3.geo.path().projection(projection);
+//       return { path: path, projection: projection };
+//     },
+//   });
+// }
 
-//     var path = d3.geo.path().projection(projection);
-//     return { path: path, projection: projection };
-//   },
-// });
+// Pasomap.prototype._handleMapReady = function(datamap) {
+//   this.zoom = new Zoom({
+//   	$container: this.$container,
+//   	datamap: datamap
+//   });
+// }
+
+// var pasoMap = new Pasomap();
 
 // d3.csv(themeURL + 'data/demography.csv', function(data) {
-//   pasoData["demography"] = data;
+//   pasoMap.pasoData["demography"] = data;
 
-//   pasoData["demography"].forEach((value, index) => {
+//   pasoMap.pasoData["demography"].forEach((value, index) => {
 //     __spots.push({
 //       name: '',
-//       radius: 10,
+//       radius: 11,
 //       fillKey: 'MINOR',
 //       latitude: parseFloat(value.LT),
 //       longitude: parseFloat(value.LN)
 //     });
 //   });
 
-//   console.log(__spots);
-//   pasoMap.bubbles(__spots, {
+//   pasoMap.instance.bubbles(__spots, {
 //     popupTemplate: function (geo, data) {
 //       return ['<div class="hoverinfo">' +  data.name,
-//       '<br/>Payload: ' +  data.yield + ' kilotons',
-//       '<br/>Country: ' +  data.country + '',
-//       '<br/>Date: ' +  data.date + '',
+//       '<br/>Country: ' +  data.radius + '',
+//       '<br/>Date: ' +  data.latitude + '',
+//       '<br/>Date: ' +  data.longitude + '',
 //       '</div>'].join('');
 //     }
 //   });
 // });
+
