@@ -217,9 +217,24 @@ const $container = jQuery("#pasomap");
 let width = $container.width(), height = $container.height();
 const showlayers = false;
 
-const transform = d3.zoomIdentity.translate(width >> 1, height >> 1).scale(1 << 12);
+const projection = d3.geoMercator()
+      .scale(1 / (2 * Math.PI))
+      .translate([0, 0]);
+  
+const initialCenter = [-74.297333, 4.570868]; // Colombia Center
+const initialScale = 10000;
+
+const transform = d3.zoomIdentity
+  .translate(width / 2, height / 2)
+  .scale(-initialScale)
+  .translate(...projection(initialCenter))
+  .scale(-1);
+
 const deltas = [-100, -4, -1, 0];
 const url = (x, y, z) => `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/${z}/${x}/${y}${devicePixelRatio > 1 ? "@2x" : ""}?access_token=pk.eyJ1IjoidG1jdyIsImEiOiJjamN0Z3ZiOXEwanZkMnh2dGFuemkzemE3In0.gibebYiJ5TEdXvwjpCY0jg`;
+
+var pi = Math.PI,
+    tau = 2 * pi;
 
 const raster_map = function() {
   const svg = d3.create("svg")
@@ -267,17 +282,6 @@ const raster_map = function() {
 
 let map = raster_map();
 $container.append(map);
-
-setTimeout(function() {
-  let projection = d3.geo.mercator()
-      .center([0, 5 ])
-      .scale(150)
-      .rotate([-180,0]);
-  let path = d3.geo.path()
-      .projection(projection);
-
-}, 3000)
-
 
 
 
