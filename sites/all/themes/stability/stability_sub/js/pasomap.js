@@ -216,6 +216,7 @@ function rescaleBubbles(datamap) {
 const $container = jQuery("#pasomap");
 let width = $container.width(), height = $container.height();
 const showlayers = false;
+
 const transform = d3.zoomIdentity.translate(width >> 1, height >> 1).scale(1 << 12);
 const deltas = [-100, -4, -1, 0];
 const url = (x, y, z) => `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/${z}/${x}/${y}${devicePixelRatio > 1 ? "@2x" : ""}?access_token=pk.eyJ1IjoidG1jdyIsImEiOiJjamN0Z3ZiOXEwanZkMnh2dGFuemkzemE3In0.gibebYiJ5TEdXvwjpCY0jg`;
@@ -267,7 +268,15 @@ const raster_map = function() {
 let map = raster_map();
 $container.append(map);
 
+setTimeout(function() {
+  let projection = d3.geo.mercator()
+      .center([0, 5 ])
+      .scale(150)
+      .rotate([-180,0]);
+  let path = d3.geo.path()
+      .projection(projection);
 
+}, 3000)
 
 
 
