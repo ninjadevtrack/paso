@@ -509,3 +509,14 @@ body.node-type-blog .main #content > ul.links.inline {
   height: 100%;
   width: 100%;
 }
+.circles-container {
+  pointer-events: all;
+}
+
+.circles-container circle {
+  cursor: pointer;
+  transform-origin: center;
+}
+.circles-container circle:hover {
+  fill-opacity: 1;
+}

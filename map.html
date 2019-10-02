@@ -1,68 +1,85 @@
 <!DOCTYPE html>
 <html>
-
-<body>
-
-
-    <meta charset="utf-8">
-
-  <!-- Load d3.js and the geo projection plugin -->
-  <script src="https://d3js.org/d3.v4.js"></script>
-  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
-  
-  <!-- Create an element where the map will take place -->
-  <svg id="my_dataviz" width="440" height="300"></svg>
-  
-    <script>
-
-        // The svg
-        var svg = d3.select("svg"),
-            width = +svg.attr("width"),
-            height = +svg.attr("height");
-        
-        // Map and projection
-        var projection = d3.geoMercator()
-            .center([2, 47])                // GPS of location to zoom on
-            .scale(1020)                       // This is like the zoom
-            .translate([ width/2, height/2 ])
-        
-        
-        // Create data for circles:
-        var markers = [
-          {long: 9.083, lat: 42.149, group: "A", size: 34}, // corsica
-          {long: 7.26, lat: 43.71, group: "A", size: 14}, // nice
-          {long: 2.349, lat: 48.864, group: "B", size: 87}, // Paris
-          {long: -1.397, lat: 43.664, group: "B", size: 41}, // Hossegor
-          {long: 3.075, lat: 50.640, group: "C", size: 78}, // Lille
-          {long: -3.83, lat: 58, group: "C", size: 12} // Morlaix
-        ];
-        
-       // Create a color scale
-       var color = d3.scaleOrdinal()
-              .domain(["A", "B", "C" ])
-              .range([ "#402D54", "#D18975", "#8FD175"])
-        
-            // Add a scale for bubble size
-            var size = d3.scaleLinear()
-              .domain([1,100])  // What's in the data
-              .range([ 4, 50])  // Size in pixel
-            // Add circles:
-            svg
-              .selectAll("circles")
-              .data(markers)
-              .enter()
-              .append("circle")
-                .attr("cx", function(d){console.log(d); console.log(projection([d.long, d.lat])); return projection([d.long, d.lat])[0] })
-                .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
-                .attr("r", function(d){ return size(d.size) })
-                .style("fill", function(d){ return color(d.group) })
-                .attr("stroke", function(d){ return color(d.group) })
-                .attr("stroke-width", 3)
-                .attr("fill-opacity", .4)
+    <head>
+        <meta charset="utf-8">
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <style>
+          body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
+        </style>
+      </head>
       
-        
-        </script>
-</body>
+      <body>
+         <script>
+              const width = 960,
+                  height = 500,
+                  projection = d3.geoMercator()
+                      .center([0, 5])
+                      .scale(200)
+                      .rotate([-180, 0]),
+                  svg = d3.select('body').append('svg')
+                      .attr('width', width)
+                      .attr('height', height),
+                  path = d3.geoPath()
+                      .projection(projection),
+                  g = svg.append('g'),
+                  cities = [{ 'code': 'ZNZ', 'city': 'ZANZIBAR', 'country': 'TANZANIA', 'lat': '-6.13', 'lon': '39.31' }, { 'code': 'OTT', 'city': 'OTTAWA', 'country': 'CANADA', 'lat': '23.10', 'lon': '120.34' }, { 'code': 'BSB', 'city': 'BRASILIA', 'country': 'BRAZIL', 'lat': '-32.85', 'lon': '133.30' }, { 'code': 'DEL', 'city': 'DELHI', 'country': 'INDIA', 'lat': '4.71', 'lon': '-127.57' }, { 'code': 'CMX', 'city': 'CIDADE DO MÉXICO', 'country': 'MÉXICO', 'lat': '0.42', 'lon': '93.19' }, { 'code': 'SID', 'city': 'SIDNEY', 'country': 'AUSTRALIA', 'lat': '-48.38', 'lon': '-71.71' }, { 'code': 'TOK', 'city': 'TOQUIO', 'country': 'JAPÃO', 'lat': '17.34', 'lon': '-81.73' }, { 'code': 'CCA', 'city': 'CIDADE DO CABO', 'country': 'AFRICA DO SUL', 'lat': '-43.20', 'lon': '-171.97' }, { 'code': 'CMP', 'city': 'CAMPO GRANDE', 'country': 'BRASIL', 'lat': '-36.15', 'lon': '130.72' }, { 'code': 'PAR', 'city': 'PARIS', 'country': 'FRANÇA', 'lat': '22.19', 'lon': '174.27' }, { 'code': 'NOY', 'city': 'NOVA YORK', 'country': 'USA', 'lat': '11.23', 'lon': '112.96' }]
+      
+              g.append('image')
+                  .attr('xlink:href', 'https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')
+                  .append('path')
+                  .attr('d', path)
+      
+              // Carregar cidades | load city
+              //d3.json('cities.json', (error, data) => {
+              const circles = g.selectAll('circle')
+                  .data(cities)
+                  .enter()
+                  .append('a')
+                  .attr('xlink:href', d => `https://www.google.com/search?q=${d.city}`
+                  )
+                  .append('circle')
+                  .attr('cx', d => projection([d.lon, d.lat])[0])
+                  .attr('cy', d => projection([d.lon, d.lat])[1])
+                  .attr('r', 5)
+                  .style('fill', 'red'),
+                  drag_handler = d3.drag()
+                      .on('start', drag_start)
+                      .on('drag', drag_drag)
+      
+              function drag_start() {
+                  start_x = +d3.event.x
+                  start_y = +d3.event.y
+              }
+      
+              function drag_drag(d) {
+                  //Get the current scale of the circle 
+                  //case where we haven't scaled the circle yet
+                  // get lon x lat
+                  console.log('lon x lat', projection.invert([d3.event.x, d3.event.y]))
+      
+                  if (!this.getAttribute('transform'))
+                      current_scale = 1
+                  else {
+                      current_scale_string = this.getAttribute('transform').split(' ')[1]
+                      current_scale = +current_scale_string.substring(6, current_scale_string.length - 1)
+                  }
+                  d3.select(this)
+                      .attr('cx', d.x = start_x + ((d3.event.x - start_x) / current_scale))
+                      .attr('cy', d.y = start_y + ((d3.event.y - start_y) / current_scale))
+              }
+      
+              drag_handler(circles)
+      
+              // zoom and pan
+              const zoom = d3.zoom()
+                  .on('zoom', () => {
+                      g.style('stroke-width', `${1.5 / d3.event.transform.k}px`)
+                      g.attr('transform', d3.event.transform) // updated for d3 v4
+                  })
+      
+              svg.call(zoom)
+          </script>
+      </body>
 
 
 </html>

@@ -1,127 +1,90 @@
 
 
+const $ = jQuery;
 const themeURL = '/sites/all/themes/stability/stability_sub/';
+const mapID = 'pasomap';
 let __markers = [];
 
-var markers = [
-  {long: 9.083, lat: 42.149, group: "A", size: 34}, // corsica
-  {long: 7.26, lat: 43.71, group: "A", size: 14}, // nice
-  {long: 2.349, lat: 48.864, group: "B", size: 87}, // Paris
-  {long: -1.397, lat: 43.664, group: "B", size: 41}, // Hossegor
-  {long: 3.075, lat: 50.640, group: "C", size: 78}, // Lille
-  {long: -3.83, lat: 58, group: "C", size: 12} // Morlaix
-];
-
-// d3 code
 
 const $container = jQuery("#pasomap");
-let width = $container.width(), height = $container.height();
-const showlayers = false;
-
-const projection = d3.geoMercator()
-      .scale(1 / (2 * Math.PI))
-      .translate([0, 0]);
-      
-const initialCenter = [-74.297333, 4.570868]; // Colombia Center
-const initialScale = 10000;
-      
-const projection2 = d3.geoMercator()
-.center(initialCenter)
-.scale(200)
-.rotate([-180, 0]);
-
-const transform = d3.zoomIdentity
-  .translate(width / 2, height / 2)
-  .scale(-initialScale)
-  .translate(...projection(initialCenter))
-  .scale(-1);
-
-const deltas = [-100, -4, -1, 0];
-const url = (x, y, z) => `https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/${z}/${x}/${y}${devicePixelRatio > 1 ? "@2x" : ""}?access_token=pk.eyJ1IjoidG1jdyIsImEiOiJjamN0Z3ZiOXEwanZkMnh2dGFuemkzemE3In0.gibebYiJ5TEdXvwjpCY0jg`;
-
-let svg;
+const width = $container.width(), height = $container.height();
+const initialCenter = [4.570868, -74.297333]; // Colombia Center
+const mapStyles = [
+  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidG1jdyIsImEiOiJjamN0Z3ZiOXEwanZkMnh2dGFuemkzemE3In0.gibebYiJ5TEdXvwjpCY0jg',
+  'https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
+  'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png',
+  'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+  'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+];
+let areaCode = '';
+let sumParticipants = 0;
 
 const raster_map = function() {
-  svg = d3.create("svg")
-      .attr("viewBox", [0, 0, width, height]);
-
-  const tile = d3.tile()
-      .extent([[0, 0], [width, height]])
-      .tileSize(512)
-      .clampX(false);
-
-  const zoom = d3.zoom()
-      .scaleExtent([1 << 8, 1 << 22])
-      .extent([[0, 0], [width, height]])
-      .on("zoom", () => zoomed(d3.event.transform));
-
-  const levels = svg.append("g")
-      .attr("pointer-events", "none")
-      .selectAll("g")
-      .data(deltas)
-      .join("g")
-      .style("opacity", showlayers ? 0.3 : null);
-
-  svg
-      .call(zoom)
-      .call(zoom.transform, transform);
-
-  function zoomed(transform) {
-    console.log(transform);
-    levels.each(function(delta) {
-      const tiles = tile.zoomDelta(delta)(transform);
-
-      d3.select(this)
-        .selectAll("image")
-        .data(tiles, d => d)
-        .join("image")
-          .attr("xlink:href", d => url(...d3.tileWrap(d)))
-          .attr("x", ([x]) => (x + tiles.translate[0]) * tiles.scale)
-          .attr("y", ([, y]) => (y + tiles.translate[1]) * tiles.scale)
-          .attr("width", tiles.scale)
-          .attr("height", tiles.scale);
-    });
-  }
+  let map = L.map(mapID).setView(initialCenter, 5);
   
-  return svg.node();
-}
+  L.tileLayer(mapStyles[0], {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 20
+  }).addTo(map);
 
+  L.svg().addTo(map);
 
-
-let map = raster_map();
-$container.append(map);
-
-d3.csv(themeURL + 'data/demography.csv')
+  d3.csv(themeURL + 'data/demography.csv')
   .then(function(data) {
     data.forEach((value, index) => {
+      console.log(value);
+      if (areaCode == '') {
+        sumParticipants += parseInt(value.Beneficiarios);
+      } else if (areaCode == value.COD_ERA) {
+        sumParticipants = parseInt(value.Beneficiarios);
+      }
       __markers.push({
         lat: parseFloat(value.LT),
-        long: parseFloat(value.LN)
+        long: parseFloat(value.LN),
+        participants: parseInt(value.Beneficiarios),
+        area_code: value.COD_ERA,
       });
     });
+
+    $(".map-meta .participants .meta-item-list").text(sumParticipants);
   
-    console.log(__markers);
     // Add circles:
-    svg
+    d3.select(`#${mapID}`)
+      .select("svg")
+        .attr("class", "circles-container")
       .selectAll("circles")
       .data(__markers)
       .enter()
       .append("circle")
-        .attr("cx", function(d){
-          console.log(d);
-          console.log(projection2([d.long, d.lat]));
-          return projection2([d.long, d.lat])[0]
-        })
-        .attr("cy", function(d){ return projection2([d.long, d.lat])[1] })
-        .attr("r", 14)
+        .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
+        .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
+        .attr("r", 11)
         .style("fill", "69b3a2")
         .attr("stroke", "#69b3a2")
-        .attr("stroke-width", 3)
+        .attr("stroke-width", 1)
         .attr("fill-opacity", .4)
+        .on("click", function(d) {
+          console.log('click', d);
+        });
   })
   .catch(function(error){
     console.log(error);
   });
 
+  // Function that update circle position if something change
+  function update() {
+    d3.selectAll("circle")
+      .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
+      .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
+  }
+  
+  // If the user change the map (zoom or drag), I update circle position:
+  map.on("moveend", update)
+}
+
+raster_map();
 
 
