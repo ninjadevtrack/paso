@@ -3,7 +3,7 @@
 const $ = jQuery;
 const themeURL = '/sites/all/themes/stability/stability_sub/';
 const mapID = 'pasomap';
-let __markers = [], __areas = [], __organizations = [];
+let __data = {}, __markers = [], __areas = [], __organizations = [], __projects = [], __partners = [];
 
 
 const $container = jQuery("#pasomap");
@@ -75,25 +75,46 @@ const raster_map = function() {
     console.log(error);
   });
 
-  d3.csv(themeURL + 'data/organizations.csv').then(function(data) {
-    data.forEach((value, index) => {
-      console.log(value);
-      
-      if (!__organizations[value.COD_ERA]) {
-        __organizations[value.COD_ERA] = [];
-      }
-      __organizations[value.COD_ERA].push({
-        name: value.Organización,
-        area_code: value.COD_ERA,
-      });
-    });
+  function read_data(name, field_name) {
+    __data[name] = [];
 
-    console.log(__organizations);
-    // $(".map-meta .participants .meta-item-list").html(`<h1>${sumParticipants}</h1>`);
+    d3.csv(themeURL + `data/${name}.csv`).then(function(d) {
+      let list = [];
+      d.forEach(value => {
+        // console.log(value);
+        
+        if (!__data[name][value.COD_ERA]) {
+          __data[name][value.COD_ERA] = [];
+        }
+        __data[name][value.COD_ERA].push({
+          name: value[field_name],
+          area_code: value['COD_ERA'],
+        });
+      });
   
-  }).catch(function(error) {
-    console.log(error);
-  });
+      if (currentAreaCode == '') {
+        for (var key in __data[name]) {
+          __data[name][key].forEach(v => {
+            list.push(`<li>${v.name}</li>`);
+          });
+        }
+      } else {
+        __data[name][currentAreaCode].forEach(value => {
+          list.push(`<li>${value.name}</li>`);
+        });
+      }
+      
+      $(`.map-meta .${name} .meta-item-list`).html(`<ul>${list.join('')}</ul>`);
+      console.log(name, __data[name], list);
+    }).catch(function(error) {
+      console.log(error);
+    });
+  }
+
+  read_data("organizations", "Organización (2)");
+  read_data("projects", "Proyecto Productivo (2)");
+  read_data("partners", "OUR PARTNERS");
+  
 
 
 

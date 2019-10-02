@@ -510,6 +510,24 @@ body.node-type-blog .main #content > ul.links.inline {
   border: 1px solid #103a58;
   height: 100%;
   width: 100%;
+  max-height: 236px;
+  overflow: auto;
+}
+.meta-item-list > ul {
+  list-style: none;
+  padding: 0px 10px;
+  margin: 5px 0px;
+  font-size: 12px;
+}
+.meta-item-list > ul > li {
+  cursor: pointer;
+  padding-left: 5px;
+}
+.meta-item-list > ul > li:nth-child(odd) {
+  background: #efefef;
+}
+.meta-item-list > ul > li:nth-child(even) {
+  background: #fff;
 }
 .circles-container {
   pointer-events: all;
