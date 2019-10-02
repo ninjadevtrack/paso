@@ -3,7 +3,7 @@
 const $ = jQuery;
 const themeURL = '/sites/all/themes/stability/stability_sub/';
 const mapID = 'pasomap';
-let __markers = [];
+let __markers = [], __areas = [], __organizations = [];
 
 
 const $container = jQuery("#pasomap");
@@ -19,7 +19,7 @@ const mapStyles = [
   'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 ];
-let areaCode = '';
+let currentAreaCode = '';
 let sumParticipants = 0;
 
 const raster_map = function() {
@@ -32,24 +32,26 @@ const raster_map = function() {
 
   L.svg().addTo(map);
 
-  d3.csv(themeURL + 'data/demography.csv')
-  .then(function(data) {
+  d3.csv(themeURL + 'data/areas.csv').then(function(data) {
     data.forEach((value, index) => {
-      console.log(value);
-      if (areaCode == '') {
+      if (currentAreaCode == '') {
         sumParticipants += parseInt(value.Beneficiarios);
-      } else if (areaCode == value.COD_ERA) {
+      } else if (currentAreaCode == value.COD_ERA) {
         sumParticipants = parseInt(value.Beneficiarios);
       }
-      __markers.push({
+
+      let obj = {
         lat: parseFloat(value.LT),
         long: parseFloat(value.LN),
         participants: parseInt(value.Beneficiarios),
         area_code: value.COD_ERA,
-      });
+      };
+      __areas[value.COD_ERA] = obj;
+      __markers.push(obj);
+
     });
 
-    $(".map-meta .participants .meta-item-list").text(sumParticipants);
+    $(".map-meta .participants .meta-item-list").html(`<h1>${sumParticipants}</h1>`);
   
     // Add circles:
     d3.select(`#${mapID}`)
@@ -69,10 +71,31 @@ const raster_map = function() {
         .on("click", function(d) {
           console.log('click', d);
         });
-  })
-  .catch(function(error){
+  }).catch(function(error) {
     console.log(error);
   });
+
+  d3.csv(themeURL + 'data/organizations.csv').then(function(data) {
+    data.forEach((value, index) => {
+      console.log(value);
+      
+      if (!__organizations[value.COD_ERA]) {
+        __organizations[value.COD_ERA] = [];
+      }
+      __organizations[value.COD_ERA].push({
+        name: value.Organización,
+        area_code: value.COD_ERA,
+      });
+    });
+
+    console.log(__organizations);
+    // $(".map-meta .participants .meta-item-list").html(`<h1>${sumParticipants}</h1>`);
+  
+  }).catch(function(error) {
+    console.log(error);
+  });
+
+
 
   // Function that update circle position if something change
   function update() {
