@@ -3,7 +3,9 @@
 const $ = jQuery;
 const themeURL = '/sites/all/themes/stability/stability_sub/';
 const mapID = 'pasomap';
-let __data = {}, __markers = [], __areas = [], __organizations = [], __projects = [], __partners = [];
+let __data = {},
+    __areas = [],
+    __markers = [];
 
 
 const $container = jQuery("#pasomap");
@@ -19,8 +21,9 @@ const mapStyles = [
   'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 ];
-let currentAreaCode = '';
+let currentAreaCode = 'PASO-E03TUL';
 let sumParticipants = 0;
+let bubbleRadius = 11;
 
 const raster_map = function() {
   let map = L.map(mapID).setView(initialCenter, 5);
@@ -31,7 +34,7 @@ const raster_map = function() {
   }).addTo(map);
 
   L.svg().addTo(map);
-
+  
   d3.csv(themeURL + 'data/areas.csv').then(function(data) {
     data.forEach((value, index) => {
       if (currentAreaCode == '') {
@@ -50,27 +53,67 @@ const raster_map = function() {
       __markers.push(obj);
 
     });
-
+    
     $(".map-meta .participants .meta-item-list").html(`<h1>${sumParticipants}</h1>`);
-  
+    
+    // Add tooltip
+    let tooltip = d3.select(`#${mapID}`)
+      .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "black")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("color", "white");
+    let showTooltip = function(d) {
+      tooltip
+        .transition()
+        .duration(200)
+      tooltip
+        .style("opacity", 0.8)
+        .html("Country: " + d.area_code)
+        .style("left", (d3.mouse(this)[0]+20) + "px")
+        .style("top", (d3.mouse(this)[1]-20) + "px")
+    }
+    let moveTooltip = function(d) {
+      tooltip
+        .style("left", (d3.mouse(this)[0]+20) + "px")
+        .style("top", (d3.mouse(this)[1]-20) + "px")
+    }
+    let hideTooltip = function(d) {
+      tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0)
+    }
+
     // Add circles:
     d3.select(`#${mapID}`)
       .select("svg")
-        .attr("class", "circles-container")
       .selectAll("circles")
       .data(__markers)
       .enter()
       .append("circle")
+        .attr("id", function(d){ return d.area_code })
         .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
         .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
-        .attr("r", 11)
-        .style("fill", "69b3a2")
-        .attr("stroke", "#69b3a2")
+        .attr("class", function(d){ return currentAreaCode == d.area_code ? 'active' : '' })
+        .attr("r", bubbleRadius)
+        .style("fill", "#f0c86b")
+        .attr("stroke", "#c18215")
         .attr("stroke-width", 1)
-        .attr("fill-opacity", .4)
+        .attr("fill-opacity", .8)
         .on("click", function(d) {
           console.log('click', d);
-        });
+          $(`#${mapID} circle`).removeClass("inactive active");
+          $(`#${mapID} circle`).addClass("inactive");
+          $(`#${mapID} #${d.area_code}`).removeClass("inactive").addClass("active");
+        })
+        .on("mouseover", showTooltip )
+        .on("mousemove", moveTooltip )
+        .on("mouseleave", hideTooltip )
+    
+
   }).catch(function(error) {
     console.log(error);
   });
@@ -80,9 +123,7 @@ const raster_map = function() {
 
     d3.csv(themeURL + `data/${name}.csv`).then(function(d) {
       let list = [];
-      d.forEach(value => {
-        // console.log(value);
-        
+      d.forEach(value => {        
         if (!__data[name][value.COD_ERA]) {
           __data[name][value.COD_ERA] = [];
         }
@@ -114,15 +155,15 @@ const raster_map = function() {
   read_data("organizations", "Organización (2)");
   read_data("projects", "Proyecto Productivo (2)");
   read_data("partners", "OUR PARTNERS");
-  
-
 
 
   // Function that update circle position if something change
   function update() {
+    let zoomLevel = map.getZoom();
     d3.selectAll("circle")
       .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
       .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
+      .attr("r", bubbleRadius * zoomLevel / 5)
   }
   
   // If the user change the map (zoom or drag), I update circle position:
