@@ -21,7 +21,7 @@ const mapStyles = [
   'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 ];
-let currentAreaCode = 'PASO-E03TUL';
+let currentAreaCode = '';
 let sumParticipants = 0;
 let bubbleRadius = 11;
 
@@ -101,7 +101,6 @@ const raster_map = function() {
         .attr("stroke-width", 1)
         .attr("fill-opacity", .8)
         .on("click", function(d) {
-          console.log('click', d);
           if ($(`#${mapID} #${d.area_code}`).hasClass("active")) {
             $(`#${mapID} circle`).removeClass("inactive active");
             currentAreaCode = '';
@@ -111,7 +110,8 @@ const raster_map = function() {
             $(`#${mapID} #${d.area_code}`).removeClass("inactive").addClass("active");
             currentAreaCode = d.area_code;
           }
-          
+          console.log('click', d, currentAreaCode);
+          refreshData();
         })
         .on("mouseover", showTooltip )
         .on("mousemove", moveTooltip )
@@ -122,7 +122,7 @@ const raster_map = function() {
     console.log(error);
   });
 
-  function read_data(name, field_name) {
+  function readData(name, field_name) {
     __data[name] = [];
 
     d3.csv(themeURL + `data/${name}.csv`).then(function(d) {
@@ -158,6 +158,36 @@ const raster_map = function() {
     });
   }
 
+  function refreshData() {
+    sumParticipants = 0;
+    for (var key in __areas) {
+      if (currentAreaCode == '') {
+        sumParticipants += parseInt(__areas[key].participants);
+      } else if (currentAreaCode == __areas[key].area_code) {
+        sumParticipants = parseInt(__areas[key].participants);
+      }
+    }
+    $(".map-meta .participants .meta-item-list").html(`<h1>${sumParticipants}</h1>`);
+    
+    ['organizations', 'projects', 'partners'].forEach(name => {
+      let list = [];
+      if (currentAreaCode == '') {
+        for (var key in __data[name]) {
+          __data[name][key].forEach(v => {
+            list.push(`<li>${v.name}</li>`);
+          });
+        }
+      } else {
+        __data[name][currentAreaCode] && __data[name][currentAreaCode].forEach(value => {
+          list.push(`<li>${value.name}</li>`);
+        });
+      }
+      
+      $(`.map-meta .${name} .meta-item-list`).html(`<ul>${list.join('')}</ul>`);
+    });
+    
+  }
+
   function getTooltipHTML(d) {
     return `
     <div class="arrow top left"></div>
@@ -169,9 +199,9 @@ const raster_map = function() {
     </div>`;
   }
 
-  read_data("organizations", "Organización (2)");
-  read_data("projects", "Proyecto Productivo (2)");
-  read_data("partners", "OUR PARTNERS");
+  readData("organizations", "Organización (2)");
+  readData("projects", "Proyecto Productivo (2)");
+  readData("partners", "OUR PARTNERS");
 
 
   // Function that update circle position if something change
