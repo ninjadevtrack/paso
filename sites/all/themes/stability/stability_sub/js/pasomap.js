@@ -110,7 +110,6 @@ const raster_map = function() {
             $(`#${mapID} #${d.area_code}`).removeClass("inactive").addClass("active");
             currentAreaCode = d.area_code;
           }
-          console.log('click', d, currentAreaCode);
           refreshData();
         })
         .on("mouseover", showTooltip )
@@ -152,7 +151,6 @@ const raster_map = function() {
       }
       
       $(`.map-meta .${name} .meta-item-list`).html(`<ul>${list.join('')}</ul>`);
-      console.log(name, __data[name], list);
     }).catch(function(error) {
       console.log(error);
     });
@@ -167,6 +165,7 @@ const raster_map = function() {
         sumParticipants = parseInt(__areas[key].participants);
       }
     }
+    currentAreaCode == '' ? $(".region-name").text('NATIONAL AGGREGATE') : $(".region-name").text(__areas[currentAreaCode].era);
     $(".map-meta .participants .meta-item-list").html(`<h1>${sumParticipants}</h1>`);
     
     ['organizations', 'projects', 'partners'].forEach(name => {
