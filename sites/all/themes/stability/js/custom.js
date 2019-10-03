@@ -23,7 +23,8 @@
 
 jQuery(function($){
 
-    /* ----------------------------------------------------------- */
+  
+  /* ----------------------------------------------------------- */
     /*  1. Main Navigation
     /* ----------------------------------------------------------- */
 
@@ -398,7 +399,7 @@ jQuery(function($){
     })();
 
     // Parallax Background
-    $(window).load(function () {
+    $(window).on('load', function() { 
 
         if($(".parallax-bg, .fwb-parallax").get(0) && $(window).width() > 991) {
             if(!Modernizr.touch) {

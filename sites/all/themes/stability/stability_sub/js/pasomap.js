@@ -37,54 +37,51 @@ const raster_map = function() {
   
   d3.csv(themeURL + 'data/areas.csv').then(function(data) {
     data.forEach((value, index) => {
-      if (currentAreaCode == '') {
-        sumParticipants += parseInt(value.Beneficiarios);
-      } else if (currentAreaCode == value.COD_ERA) {
-        sumParticipants = parseInt(value.Beneficiarios);
+      if (value.COD_ERA != '') {
+        if (currentAreaCode == '') {
+          sumParticipants += parseInt(value.Beneficiarios);
+        } else if (currentAreaCode == value.COD_ERA) {
+          sumParticipants = parseInt(value.Beneficiarios);
+        }
+  
+        let obj = {
+          lat: parseFloat(value.LT),
+          long: parseFloat(value.LN),
+          participants: parseInt(value.Beneficiarios),
+          area_code: value.COD_ERA,
+          era: value.ERA
+        };
+        __areas[value.COD_ERA] = obj;
+        __markers.push(obj);
       }
-
-      let obj = {
-        lat: parseFloat(value.LT),
-        long: parseFloat(value.LN),
-        participants: parseInt(value.Beneficiarios),
-        area_code: value.COD_ERA,
-      };
-      __areas[value.COD_ERA] = obj;
-      __markers.push(obj);
-
     });
     
     $(".map-meta .participants .meta-item-list").html(`<h1>${sumParticipants}</h1>`);
     
     // Add tooltip
-    let tooltip = d3.select(`#${mapID}`)
+    let tooltip = d3.select(`body`)
       .append("div")
-        .style("opacity", 0)
-        .attr("class", "tooltip")
-        .style("background-color", "black")
-        .style("border-radius", "5px")
-        .style("padding", "10px")
-        .style("color", "white");
+        .style("display", "none")
+        .attr("class", "tooltip map-tooltip")
     let showTooltip = function(d) {
+      var html = getTooltipHTML(d);
       tooltip
         .transition()
         .duration(200)
       tooltip
-        .style("opacity", 0.8)
-        .html("Country: " + d.area_code)
-        .style("left", (d3.mouse(this)[0]+20) + "px")
-        .style("top", (d3.mouse(this)[1]-20) + "px")
+        .style("display", "flex")
+        .html(html)
+        .style("left", (d3.event.pageX + 30) + "px")
+        .style("top", (d3.event.pageY - 14) + "px")
     }
     let moveTooltip = function(d) {
-      tooltip
-        .style("left", (d3.mouse(this)[0]+20) + "px")
-        .style("top", (d3.mouse(this)[1]-20) + "px")
+      showTooltip(d);
     }
     let hideTooltip = function(d) {
       tooltip
         .transition()
         .duration(200)
-        .style("opacity", 0)
+        .style("display", "none")
     }
 
     // Add circles:
@@ -105,9 +102,16 @@ const raster_map = function() {
         .attr("fill-opacity", .8)
         .on("click", function(d) {
           console.log('click', d);
-          $(`#${mapID} circle`).removeClass("inactive active");
-          $(`#${mapID} circle`).addClass("inactive");
-          $(`#${mapID} #${d.area_code}`).removeClass("inactive").addClass("active");
+          if ($(`#${mapID} #${d.area_code}`).hasClass("active")) {
+            $(`#${mapID} circle`).removeClass("inactive active");
+            currentAreaCode = '';
+          } else {
+            $(`#${mapID} circle`).removeClass("inactive active");
+            $(`#${mapID} circle`).addClass("inactive");
+            $(`#${mapID} #${d.area_code}`).removeClass("inactive").addClass("active");
+            currentAreaCode = d.area_code;
+          }
+          
         })
         .on("mouseover", showTooltip )
         .on("mousemove", moveTooltip )
@@ -127,10 +131,12 @@ const raster_map = function() {
         if (!__data[name][value.COD_ERA]) {
           __data[name][value.COD_ERA] = [];
         }
-        __data[name][value.COD_ERA].push({
+        obj = {
           name: value[field_name],
           area_code: value['COD_ERA'],
-        });
+          era: value['ERA']
+        }
+        __data[name][value.COD_ERA].push(obj);
       });
   
       if (currentAreaCode == '') {
@@ -150,6 +156,17 @@ const raster_map = function() {
     }).catch(function(error) {
       console.log(error);
     });
+  }
+
+  function getTooltipHTML(d) {
+    return `
+    <div class="arrow top left"></div>
+    <div class="tt-container">
+      <div class="tt-row"><span class="tt-label">-ERA-</span><span class="tt-value">${d.era}</span></div>
+      <div class="tt-row"><span class="tt-label">Phase</span><span class="tt-value">Ongoing</span></div>
+      <div class="tt-row"><span class="tt-label">Average of LT</span><span class="tt-value">${d.lat}</span></div>
+      <div class="tt-row"><span class="tt-label">Average of LN</span><span class="tt-value">${d.long}</span></div>
+    </div>`;
   }
 
   read_data("organizations", "Organización (2)");
