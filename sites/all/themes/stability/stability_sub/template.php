@@ -4,7 +4,7 @@ function stability_sub_preprocess_page(&$variables) {
 
   $node = menu_get_object();
 
-  if ($node && $node->nid == 242) {
+  if ($node && ($node->nid == 242 || $node->nid == 243)) {
     drupal_set_title('');
     
     drupal_add_css(drupal_get_path('theme', 'stability_sub') . '/css/leaflet.css');    
