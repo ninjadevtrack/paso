@@ -425,18 +425,28 @@ body.node-type-blog .main #content > ul.links.inline {
   border-bottom: 1px solid #fff;
   flex: 1;
 }
+#map-container {
+  max-height: 652px;
+  display: flex;
+}
+#map-container .col-right img {
+  border: 10px solid #e6e6e6;
+}
+#eramap {
+  margin-right: 10px;
+}
 #pasomap {
   width: 100%;
   height: 100%;
   position: relative;
 }
 
-.content-header h4 {
-  font-family: 'Muli', sans-serif;
-  font-size: 18px;
+.content-header h2 {
   color: #103a58;
-  letter-spacing: 1px;
-  font-weight: 600;
+  background: #e6e6e6;
+  text-align: center;
+  padding: 8px 0px;
+  margin-bottom: 10px;
 }
 .map-content-section {
   border: 1px solid #103a58;
@@ -480,41 +490,43 @@ body.node-type-blog .main #content > ul.links.inline {
   display: flex;
 }
 .map-wrapper {
-  height: 580px;
+  height: 600px;
 }
 .map-wrapper, .map-meta {
   flex-wrap: wrap;
 }
-.map-content, .map-meta {
-  width: 50%;
-}
 .map-meta {
-  padding-left: 8px;
-  height: 100%;
+  width: 34%;
+  padding-left: 4px;
+  height: calc(100% + 4px);
+  margin: -2px 0px;
+}
+.map-content {
+  width: 66%;
 }
 .meta-item {
-  width: 50%;
-  height: 100%;
+  width: 100%;
+  height: 33.3333333%;
   flex-direction: column;
-  padding: 0px 3px;
 }
 .meta-item-content {
   height: 100%;
   flex-direction: column;
   display: flex;
+  padding: 2px 0px;
 }
 .meta-title {
   background: #103a58;
   width: 100%;
   color: #fff;
   text-align: center;
-  margin-bottom: 5px;
-  padding: 10px 0px;
+  margin-bottom: 3px;
+  padding: 6px 0px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
 }
 .meta-item-list {
-  border: 1px solid #103a58;
+  border: 2px solid #103a58;
   height: 100%;
   width: 100%;
   overflow: auto;
@@ -621,4 +633,30 @@ body.node-type-blog .main #content > ul.links.inline {
   border-right: 7px solid #333;
   margin-top: 7px;
   align-self: flex-start;
+}
+
+.row.no-gutter {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.no-gutter > [class*='col-'] {
+  padding-right:0;
+  padding-left:0;
+}
+#pasomap-title {
+  min-height: 42px;
+}
+@media (max-width: 991px) {
+  #map-container {
+    flex-direction: column;
+    max-height: inherit;
+  }
+
+  #eramap {
+    margin: 0px 0px 10px 0px;
+  }
+
+  #map-container .col-md-6 {
+    width: 100%;
+  }
 }
