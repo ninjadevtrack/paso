@@ -71,7 +71,6 @@ const mapStyles = [
   'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 ];
-let currentAreaCode = eraName;
 let sumParticipants = 0;
 let bubbleRadius = 11;
 let mapTitle = '';
@@ -166,16 +165,21 @@ const raster_map = function() {
         .attr("stroke-width", 1)
         .attr("fill-opacity", .8)
         .on("click", function(d) {
-          if ($(`#${mapID} #${d.area_code}`).hasClass("active")) {
-            $(`#${mapID} circle`).removeClass("inactive active");
-            currentAreaCode = '';
-          } else {
-            $(`#${mapID} circle`).removeClass("inactive active");
-            $(`#${mapID} circle`).addClass("inactive");
-            $(`#${mapID} #${d.area_code}`).removeClass("inactive").addClass("active");
-            currentAreaCode = d.area_code;
-          }
-          refreshData();
+          // if ($(`#${mapID} #${d.area_code}`).hasClass("active")) {
+          //   $(`#${mapID} circle`).removeClass("inactive active");
+          //   currentAreaCode = '';
+          // } else {
+          //   $(`#${mapID} circle`).removeClass("inactive active");
+          //   $(`#${mapID} circle`).addClass("inactive");
+          //   $(`#${mapID} #${d.area_code}`).removeClass("inactive").addClass("active");
+          //   currentAreaCode = d.area_code;
+          // }
+
+          // refreshData();
+          var mainURL = location.href.substr(0, location.href.lastIndexOf('/') + 1);
+          mainURL = encodeURI(`${mainURL}` + d.era.substr(0, d.era.lastIndexOf(",")).toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+          location.href = mainURL;
         })
         .on("mouseover", showTooltip )
         .on("mousemove", moveTooltip )

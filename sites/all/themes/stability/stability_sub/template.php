@@ -20,7 +20,7 @@ function stability_sub_preprocess_page(&$variables) {
     drupal_add_js(drupal_get_path('theme', 'stability_sub') . '/js/leaflet.js');
 
     $eraName = parseEraName($node);
-    drupal_add_js("var eraName='{$eraName}';", 'inline');
+    drupal_add_js("var currentAreaCode='{$eraName}';", 'inline');
     drupal_add_js(
       url(
         drupal_get_path('theme', 'stability_sub') . "/js/pasomap.js", 
