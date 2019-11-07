@@ -1,7 +1,7 @@
 <?php
 
 function parseEraName($node) {
-  $field_item = field_get_items('node', $node, 'field_era_name');
+  $field_item = field_get_items('node', $node, 'field_area_code');
   if (isset($field_item) && is_array($field_item)) {
     return $field_item[0]["value"];
   } else {
