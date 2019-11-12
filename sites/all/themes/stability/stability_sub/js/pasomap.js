@@ -54,6 +54,7 @@ const mapHTML = `
 `;
 const mapContainer = "#eramap";
 const eramapContainer = "#map-container";
+const eraMainURL = location.protocol + "//" + location.host + "/escuela-rural-alternativa";
 let __data = {},
     __areas = [],
     __markers = [];
@@ -91,17 +92,14 @@ const raster_map = function() {
 
   map.on('click', function(e) {
     if ($(e.originalEvent.target).hasClass("leaflet-zoom-animated")) {
-      $(`#${mapID} circle`).removeClass("inactive active");
-      // $(`#${mapID} circle`).addClass("active");
-      currentAreaCode = '';
-      refreshData();
+      if (currentAreaCode != 'all') location.href = eraMainURL;
     }
   });
   
   d3.csv(themeURL + 'data/areas.csv').then(function(data) {
     data.forEach((value, index) => {
       if (value.COD_ERA != '') {
-        if (currentAreaCode == '') {
+        if (currentAreaCode == 'all') {
           sumParticipants += parseInt(value.Beneficiarios);
         } else if (currentAreaCode == value.COD_ERA) {
           sumParticipants = parseInt(value.Beneficiarios);
@@ -120,7 +118,6 @@ const raster_map = function() {
     });
     
     updateMapTitle(sumParticipants);
-    // $(".map-meta .participants .meta-item-list").html(`<h1>${sumParticipants}</h1>`);
     
     // Add tooltip
     let tooltip = d3.select(`body`)
@@ -158,7 +155,7 @@ const raster_map = function() {
         .attr("id", function(d){ return d.area_code })
         .attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
         .attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
-        .attr("class", function(d){ return currentAreaCode == '' ? '' : currentAreaCode == d.area_code ? 'active' : 'inactive' })
+        .attr("class", function(d){ return currentAreaCode == 'all' ? '' : currentAreaCode == d.area_code ? 'active' : 'inactive' })
         .attr("r", bubbleRadius)
         .style("fill", "#f0c86b")
         .attr("stroke", "#c18215")
@@ -176,10 +173,8 @@ const raster_map = function() {
           // }
 
           // refreshData();
-          var mainURL = location.href.substr(0, location.href.lastIndexOf('/') + 1);
-          mainURL = encodeURI(`${mainURL}` + d.era.substr(0, d.era.lastIndexOf(",")).toLowerCase()
+          location.href = encodeURI(`${eraMainURL}/` + d.era.substr(0, d.era.lastIndexOf(",")).toLowerCase()
             .normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
-          location.href = mainURL;
         })
         .on("mouseover", showTooltip )
         .on("mousemove", moveTooltip )
@@ -207,7 +202,7 @@ const raster_map = function() {
         __data[name][value.COD_ERA].push(obj);
       });
   
-      if (currentAreaCode == '') {
+      if (currentAreaCode == 'all') {
         for (var key in __data[name]) {
           __data[name][key].forEach(v => {
             list.push(`<li>${v.name}</li>`);
@@ -228,7 +223,7 @@ const raster_map = function() {
   function refreshData() {
     sumParticipants = 0;
     for (var key in __areas) {
-      if (currentAreaCode == '') {
+      if (currentAreaCode == 'all') {
         sumParticipants += parseInt(__areas[key].participants);
       } else if (currentAreaCode == __areas[key].area_code) {
         sumParticipants = parseInt(__areas[key].participants);
@@ -238,7 +233,7 @@ const raster_map = function() {
     
     ['organizations', 'projects', 'partners'].forEach(name => {
       let list = [];
-      if (currentAreaCode == '') {
+      if (currentAreaCode == 'all') {
         for (var key in __data[name]) {
           __data[name][key].forEach(v => {
             list.push(`<li>${v.name}</li>`);
@@ -267,7 +262,7 @@ const raster_map = function() {
   }
 
   function updateMapTitle(sumParticipants) {
-    currentAreaCode == '' ? mapTitle = 'NATIONAL AGGREGATE' : mapTitle = __areas[currentAreaCode]['era'];
+    currentAreaCode == 'all' ? mapTitle = 'NATIONAL AGGREGATE' : mapTitle = __areas[currentAreaCode]['era'];
     $("#pasomap-title").html(`${mapTitle} | ${sumParticipants} PARTICIPANTS`);
   }
 

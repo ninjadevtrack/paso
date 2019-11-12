@@ -11,8 +11,7 @@ function parseEraName($node) {
 
 function stability_sub_preprocess_page(&$variables) {
   $node = menu_get_object();
-  
-  if ($node && ($node->type == "era")) {
+  if ($node && ($node->type == "era") || drupal_get_path_alias() == "escuela-rural-alternativa") {
     drupal_set_title('');
     
     drupal_add_css(drupal_get_path('theme', 'stability_sub') . '/css/leaflet.css');    
